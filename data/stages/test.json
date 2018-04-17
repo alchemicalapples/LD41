@@ -1,0 +1,11 @@
+[
+    {
+        "position": {
+            "x": 0,
+            "y": 0
+        },
+        "script": {
+            "name": "actor/player"
+        }
+    }
+]

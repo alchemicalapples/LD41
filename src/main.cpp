@@ -39,6 +39,8 @@ int main() try {
 
     ember_database entities;
 
+    std::cout << "Creating Lua state..." << std::endl;
+
     sol::state lua;
     lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::string);
 
@@ -48,8 +50,13 @@ int main() try {
     scripting::register_type<ember_database>(global_table);
 
     auto component_table = lua.create_named_table("component");
+    scripting::register_type<component::net_id>(component_table);
     scripting::register_type<component::position>(component_table);
     scripting::register_type<component::script>(component_table);
+
+    auto input_table = lua.create_named_table("input");
+
+    std::cout << "Creating caches..." << std::endl;
 
     auto mesh_cache = resource_cache<sushi::static_mesh, std::string>([](const std::string& name){
             return sushi::load_static_mesh_file("data/models/" + name + ".obj");
@@ -69,6 +76,7 @@ int main() try {
             return env;
         }};
 
+    std::cout << "Initializing SDL..." << std::endl;
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         throw std::runtime_error(SDL_GetError());
@@ -79,11 +87,15 @@ int main() try {
         exit(0);
     };
 
+    std::cout << "Loading config..." << std::endl;
+
     auto config = emberjs::get_config();
 
     const auto display_width = int(config["display"]["width"]);
     const auto display_height = int(config["display"]["height"]);
     const auto aspect_ratio = float(display_width) / float(display_height);
+
+    std::cout << "Opening window..." << std::endl;
 
     auto g_window = SDL_CreateWindow("LD41", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, display_width, display_height, SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
 
@@ -95,6 +107,8 @@ int main() try {
     auto glcontext = SDL_GL_CreateContext(g_window);
 
     glEnable(GL_DEPTH_TEST);
+
+    std::cout << "Loading shaders..." << std::endl;
 
     auto program = sushi::link_program({
         sushi::compile_shader_file(sushi::shader_type::VERTEX, "data/shaders/basic.vert"),
@@ -118,9 +132,9 @@ int main() try {
     glBindAttribLocation(program_msdf.get(), sushi::attrib_location::NORMAL, "normal");
 
     auto sprite_mesh = sushi::load_static_mesh_data(
-        {{-0.5f, 0.f, 0.5f},{-0.5f, 0.f, -0.5f},{0.5f, 0.f, -0.5f},{0.5f, 0.f, 0.5f}},
+        {{-0.5f, 0.5f, 0.f},{-0.5f, -0.5f, 0.f},{0.5f, -0.5f, 0.f},{0.5f, 0.5f, 0.f}},
         {{0.f, 1.f, 0.f},{0.f, 1.f, 0.f},{0.f, 1.f, 0.f},{0.f, 1.f, 0.f}},
-        {{0.f, 1.f},{0.f, 0.f},{1.f, 0.f},{1.f, 1.f}},
+        {{0.f, 0.f},{0.f, 1.f},{1.f, 1.f},{1.f, 0.f}},
         {{{{0,0,0},{1,1,1},{2,2,2}}},{{{2,2,2},{3,3,3},{0,0,0}}}}
     );
 
@@ -148,6 +162,50 @@ int main() try {
 
     root_widget.add_child(version_stamp);
     root_widget.add_child(framerate_stamp);
+
+    std::cout << "Loading stage..." << std::endl;
+
+    {
+        std::ifstream file ("data/stages/test.json");
+        nlohmann::json json;
+        file >> json;
+
+        auto json_to_lua = [&](const nlohmann::json& json, auto& json_to_lua) -> sol::object {
+            using value_t = nlohmann::json::value_t;
+            switch (json.type()) {
+                case value_t::null:
+                    return sol::make_object(lua, sol::nil);
+                case value_t::object: {
+                    auto obj = lua.create_table();
+                    for (auto it = json.begin(); it != json.end(); ++it) {
+                        obj[it.key()] = json_to_lua(it.value(), json_to_lua);
+                    }
+                    return obj;
+                }
+                case value_t::array: {
+                    auto obj = lua.create_table();
+                    for (auto i = 0; i < json.size(); ++i) {
+                        obj[i+1] = json_to_lua(json[i], json_to_lua);
+                    }
+                    return obj;
+                }
+                case value_t::string:
+                    return sol::make_object(lua, json.get<std::string>());
+                case value_t::boolean:
+                    return sol::make_object(lua, json.get<bool>());
+                case value_t::number_integer:
+                case value_t::number_unsigned:
+                case value_t::number_float:
+                    return sol::make_object(lua, json.get<double>());
+                default:
+                    return sol::make_object(lua, sol::nil);
+            }
+        };
+
+        auto loader_ptr = environment_cache.get("system/loader");
+
+        (*loader_ptr)["load_world"](json_to_lua(json, json_to_lua));
+    }
 
     auto handle_game_input = [&](const SDL_Event& event){
         switch (event.type) {
@@ -193,6 +251,8 @@ int main() try {
     framerate_buffer.reserve(10);
 
     loop = [&]{
+        // System
+
         auto now = clock::now();
         auto delta_time = now - prev_time;
         prev_time = now;
@@ -206,6 +266,8 @@ int main() try {
             framerate_buffer.clear();
         }
 
+        auto delta = std::chrono::duration<double>(delta_time).count();
+
         SDL_Event event;
         while (SDL_PollEvent(&event))
         {
@@ -215,10 +277,23 @@ int main() try {
 
         const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
+        input_table["left"] = bool(keys[SDL_SCANCODE_LEFT]);
+        input_table["right"] = bool(keys[SDL_SCANCODE_RIGHT]);
+        input_table["up"] = bool(keys[SDL_SCANCODE_UP]);
+        input_table["down"] = bool(keys[SDL_SCANCODE_DOWN]);
+
+        // Update
+
+        entities.visit([&](ember_database::ent_id eid, const component::script& script) {
+            (*environment_cache.get(script.name))["update"](eid, delta);
+        });
+
+        // Render
+
         glClearColor(0,0,0,1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        auto proj = glm::ortho(-10.f, 10.f, -10.f, 10.f, 10.f, -10.f);
+        auto proj = glm::ortho(-10.f * aspect_ratio, 10.f * aspect_ratio, -10.f, 10.f, 10.f, -10.f);
         auto view = glm::mat4(1.f);
 
         auto frustum = sushi::frustum(proj*view);
@@ -227,6 +302,7 @@ int main() try {
             auto modelmat = glm::mat4(1);
             modelmat = glm::translate(modelmat, {pos.x, pos.y, 0});
 
+            sushi::set_program(program);
             sushi::set_uniform("normal_mat", glm::inverseTranspose(view*modelmat));
             sushi::set_uniform("MVP", (proj*view*modelmat));
             sushi::set_texture(0, *texture_cache.get("test"));
