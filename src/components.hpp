@@ -40,13 +40,22 @@ REGISTER(net_id,
          MEMBER(id))
 
 struct position {
-    float x;
-    float y;
+    float x = 0;
+    float y = 0;
 };
 
 REGISTER(position,
          MEMBER(x),
          MEMBER(y))
+
+struct velocity {
+    float vx = 0;
+    float vy = 0;
+};
+
+REGISTER(velocity,
+         MEMBER(vx),
+         MEMBER(vy))
 
 struct script {
     std::string name;

@@ -52,6 +52,7 @@ int main() try {
     auto component_table = lua.create_named_table("component");
     scripting::register_type<component::net_id>(component_table);
     scripting::register_type<component::position>(component_table);
+    scripting::register_type<component::velocity>(component_table);
     scripting::register_type<component::script>(component_table);
 
     auto input_table = lua.create_named_table("input");
@@ -277,12 +278,26 @@ int main() try {
 
         const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
-        input_table["left"] = bool(keys[SDL_SCANCODE_LEFT]);
-        input_table["right"] = bool(keys[SDL_SCANCODE_RIGHT]);
-        input_table["up"] = bool(keys[SDL_SCANCODE_UP]);
-        input_table["down"] = bool(keys[SDL_SCANCODE_DOWN]);
+        auto update_input = [&](const std::string& name, SDL_Scancode key) {
+            auto prev = bool(input_table[name]);
+            auto curr = bool(keys[key]);
+            input_table[name] = curr;
+            input_table[name+"_pressed"] = curr && !prev;
+            input_table[name+"_released"] = !curr && prev;
+        };
+
+        update_input("left", SDL_SCANCODE_LEFT);
+        update_input("right", SDL_SCANCODE_RIGHT);
+        update_input("up", SDL_SCANCODE_UP);
+        update_input("down", SDL_SCANCODE_DOWN);
+        update_input("shoot", SDL_SCANCODE_SPACE);
 
         // Update
+
+        entities.visit([&](component::position& pos, const component::velocity& vel) {
+            pos.x += vel.vx * delta;
+            pos.y += vel.vy * delta;
+        });
 
         entities.visit([&](ember_database::ent_id eid, const component::script& script) {
             (*environment_cache.get(script.name))["update"](eid, delta);

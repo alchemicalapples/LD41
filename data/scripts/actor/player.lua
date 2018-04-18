@@ -1,16 +1,30 @@
 function update(eid, delta)
     local pos = entities:get_component(eid, component.position)
 
+    local speed = 5.0
+
     if input.left then
-        pos.x = pos.x - 5.0 * delta
+        pos.x = pos.x - speed * delta
     end
     if input.right then
-        pos.x = pos.x + 5.0 * delta
+        pos.x = pos.x + speed * delta
     end
     if input.down then
-        pos.y = pos.y - 5.0 * delta
+        pos.y = pos.y - speed * delta
     end
     if input.up then
-        pos.y = pos.y + 5.0 * delta
+        pos.y = pos.y + speed * delta
+    end
+
+    if input.shoot_pressed then
+        local bpos = component.position.new()
+        bpos.x = pos.x
+        bpos.y = pos.y
+        local bvel = component.velocity.new()
+        bvel.vx = speed * 2
+        bvel.vy = 0
+        local bullet = entities:create_entity()
+        entities:create_component(bullet, bpos)
+        entities:create_component(bullet, bvel)
     end
 end
