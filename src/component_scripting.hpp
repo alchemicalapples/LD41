@@ -18,7 +18,9 @@ struct is_tag<ginseng::tag<T>> : std::true_type {};
 
 template <typename T, typename... Args, std::enable_if_t<!is_tag<T>::value, int> = 0>
 void new_component_usertype(sol::table& lua, const std::string& name, Args&&... args) {
-    lua.new_usertype<T>(name, std::forward<Args>(args)...,
+    lua.new_usertype<T>(name,
+        sol::constructors<T(), T(const T&)>{},
+        std::forward<Args>(args)...,
         "_create_component", [](ember_database& db, ember_database::ent_id eid, T com) -> ember_database::com_id {
             return db.create_component(eid, std::move(com));
         },

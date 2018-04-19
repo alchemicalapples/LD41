@@ -57,6 +57,19 @@ REGISTER(velocity,
          MEMBER(vx),
          MEMBER(vy))
 
+struct aabb {
+    float left = 0;
+    float right = 0;
+    float bottom = 0;
+    float top = 0;
+};
+
+REGISTER(aabb,
+         MEMBER(left),
+         MEMBER(right),
+         MEMBER(bottom),
+         MEMBER(top))
+
 struct script {
     std::string name;
 };

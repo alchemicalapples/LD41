@@ -35,6 +35,8 @@ class ember_database : public ginseng::database {
 public:
     using net_id = std::int64_t;
 
+    using ginseng::database::destroy_entity;
+
     ent_id create_entity();
 
     ent_id create_entity(net_id id);

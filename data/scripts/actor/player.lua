@@ -23,8 +23,14 @@ function update(eid, delta)
         local bvel = component.velocity.new()
         bvel.vx = speed * 2
         bvel.vy = 0
+        local aabb = component.aabb.new()
+        aabb.left = -0.5
+        aabb.right = 0.5
+        aabb.bottom = -0.5
+        aabb.top = 0.5
         local bullet = entities:create_entity()
         entities:create_component(bullet, bpos)
         entities:create_component(bullet, bvel)
+        entities:create_component(bullet, aabb)
     end
 end

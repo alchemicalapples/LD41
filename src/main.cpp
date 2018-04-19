@@ -53,6 +53,7 @@ int main() try {
     scripting::register_type<component::net_id>(component_table);
     scripting::register_type<component::position>(component_table);
     scripting::register_type<component::velocity>(component_table);
+    scripting::register_type<component::aabb>(component_table);
     scripting::register_type<component::script>(component_table);
 
     auto input_table = lua.create_named_table("input");
@@ -245,6 +246,13 @@ int main() try {
         return false;
     };
 
+    struct collision_manifold {
+        ember_database::ent_id eid1;
+        ember_database::ent_id eid2;
+        component::aabb region;
+    };
+    std::vector<collision_manifold> collisions;
+
     using clock = std::chrono::steady_clock;
     auto prev_time = clock::now();
 
@@ -279,11 +287,17 @@ int main() try {
         const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
         auto update_input = [&](const std::string& name, SDL_Scancode key) {
-            auto prev = bool(input_table[name]);
-            auto curr = bool(keys[key]);
-            input_table[name] = curr;
-            input_table[name+"_pressed"] = curr && !prev;
-            input_table[name+"_released"] = !curr && prev;
+            if (input_table[name].valid()) {
+                auto prev = bool(input_table[name]);
+                auto curr = bool(keys[key]);
+                input_table[name] = curr;
+                input_table[name+"_pressed"] = curr && !prev;
+                input_table[name+"_released"] = !curr && prev;
+            } else {
+                input_table[name] = bool(keys[key]);
+                input_table[name+"_pressed"] = bool(keys[key]);
+                input_table[name+"_released"] = false;
+            }
         };
 
         update_input("left", SDL_SCANCODE_LEFT);
@@ -298,6 +312,50 @@ int main() try {
             pos.x += vel.vx * delta;
             pos.y += vel.vy * delta;
         });
+
+        collisions.clear();
+
+        entities.visit_pairs([&](ember_database::ent_id eid1, const component::position& pos1, const component::aabb& aabb1p) {
+            auto aabb1 = aabb1p;
+            aabb1.left += pos1.x;
+            aabb1.right += pos1.x;
+            aabb1.bottom += pos1.y;
+            aabb1.top += pos1.y;
+            return [&, eid1, aabb1](ember_database::ent_id eid2, const component::position& pos2, const component::aabb& aabb2p) {
+                auto aabb2 = aabb2p;
+                aabb2.left += pos2.x;
+                aabb2.right += pos2.x;
+                aabb2.bottom += pos2.y;
+                aabb2.top += pos2.y;
+
+                auto manifold = collision_manifold{};
+                manifold.eid1 = eid1;
+                manifold.eid2 = eid2;
+                manifold.region.left = std::max(aabb1.left, aabb2.left);
+                manifold.region.right = std::min(aabb1.right, aabb2.right);
+                manifold.region.bottom = std::max(aabb1.bottom, aabb2.bottom);
+                manifold.region.top = std::min(aabb1.top, aabb2.top);
+
+                if (manifold.region.left < manifold.region.right && manifold.region.bottom < manifold.region.top) {
+                    collisions.push_back(manifold);
+                }
+            };
+        });
+
+        for (auto& collision : collisions) {
+            auto call_script = [&](ember_database::ent_id eid1, ember_database::ent_id eid2, const component::aabb& aabb) {
+                if (entities.has_component<component::script>(eid1)) {
+                    auto& script = entities.get_component<component::script>(eid1);
+                    auto script_ptr = environment_cache.get(script.name);
+                    auto on_collide = (*script_ptr)["on_collide"];
+                    if (on_collide.valid()) {
+                        on_collide(eid1, eid2, aabb);
+                    }
+                }
+            };
+            call_script(collision.eid1, collision.eid2, collision.region);
+            call_script(collision.eid2, collision.eid1, collision.region);
+        }
 
         entities.visit([&](ember_database::ent_id eid, const component::script& script) {
             (*environment_cache.get(script.name))["update"](eid, delta);
@@ -314,14 +372,16 @@ int main() try {
         auto frustum = sushi::frustum(proj*view);
 
         entities.visit([&](const component::position& pos){
-            auto modelmat = glm::mat4(1);
-            modelmat = glm::translate(modelmat, {pos.x, pos.y, 0});
+            if (frustum.contains({pos.x, pos.y, 0.f}, std::sqrt(0.5*0.5*2.f))) {
+                auto modelmat = glm::mat4(1);
+                modelmat = glm::translate(modelmat, {pos.x, pos.y, 0});
 
-            sushi::set_program(program);
-            sushi::set_uniform("normal_mat", glm::inverseTranspose(view*modelmat));
-            sushi::set_uniform("MVP", (proj*view*modelmat));
-            sushi::set_texture(0, *texture_cache.get("test"));
-            sushi::draw_mesh(sprite_mesh);
+                sushi::set_program(program);
+                sushi::set_uniform("normal_mat", glm::inverseTranspose(view*modelmat));
+                sushi::set_uniform("MVP", (proj*view*modelmat));
+                sushi::set_texture(0, *texture_cache.get("test"));
+                sushi::draw_mesh(sprite_mesh);
+            }
         });
 
         renderer.begin();

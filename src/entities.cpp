@@ -56,9 +56,10 @@ void register_type<ember_database>(sol::table& lua) {
         "create_entity", sol::overload(
             sol::resolve<ember_database::ent_id()>(&ember_database::create_entity),
             sol::resolve<ember_database::ent_id(ember_database::net_id)>(&ember_database::create_entity)),
-        "destroy_entity", &ember_database::destroy_entity,
+        "destroy_entity", sol::resolve<void(ember_database::ent_id)>(&ember_database::destroy_entity),
         "get_entity", &ember_database::get_entity,
         "get_or_create_entity", &ember_database::get_or_create_entity,
+        "exists", &ember_database::exists,
         "create_component", [](ember_database& db, ember_database::ent_id eid, sol::userdata com){
             return com["_create_component"](db, eid, com);
         },
