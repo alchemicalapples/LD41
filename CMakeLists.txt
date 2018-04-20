@@ -16,6 +16,12 @@ set(LD41_CXX_STANDARD 17)
 add_custom_target(ld41)
 
 if(EMSCRIPTEN)
+    find_package(PythonInterp 2 REQUIRED)
+
+    if(NOT PYTHONINTERP_FOUND)
+        message(FATAL_ERROR "Python 2 not found.")
+    endif()
+
     set(LD41_WWW_DIR "${CMAKE_BINARY_DIR}/www" CACHE PATH "Client Output Directory")
 
     # Client Static
@@ -26,14 +32,25 @@ if(EMSCRIPTEN)
         SOURCES ${LD41_CLIENT_STATIC})
 
     # Client Shell
-    set(LD41_CLIENT_SHELL "${CMAKE_SOURCE_DIR}/src/shell.html" CACHE PATH "Emscripten Shell")
+    set(LD41_CLIENT_SHELL ${CMAKE_SOURCE_DIR}/src/shell.html CACHE PATH "Emscripten Shell")
 
     # Client JS
     file(GLOB_RECURSE LD41_CLIENT_JS "src/*.js")
 
     # Client Data
     set(LD41_CLIENT_DATA_DIR "${CMAKE_SOURCE_DIR}/data" CACHE PATH "Client Data Directory")
-    file(GLOB_RECURSE LD41_CLIENT_DATA_FILES "${LD41_CLIENT_DATA_DIR}/*")
+    file(GLOB_RECURSE LD41_CLIENT_DATA_FILES ${LD41_CLIENT_DATA_DIR}/*)
+    set(FILE_PACKAGER $ENV{EMSCRIPTEN}/tools/file_packager.py)
+    set(LD41_DATA_FILE ${LD41_WWW_DIR}/ld41_client.data)
+    set(LD41_DATA_LOADER ${LD41_WWW_DIR}/ld41_client.data.js)
+    add_custom_command(
+        OUTPUT ${LD41_DATA_FILE} ${LD41_DATA_LOADER}
+        COMMAND ${PYTHON_EXECUTABLE} ${FILE_PACKAGER} ${LD41_DATA_FILE} --preload ${LD41_CLIENT_DATA_DIR}@data --js-output=${LD41_DATA_LOADER}
+        COMMENT "Packaging data files"
+        DEPENDS ${LD41_CLIENT_DATA_FILES})
+    add_custom_target(ld41_data
+        SOURCES ${LD41_CLIENT_DATA_FILES}
+        DEPENDS ${LD41_DATA_FILE} ${LD41_DATA_LOADER})
 
     # Client C++
     file(GLOB_RECURSE LD41_CLIENT_SRCS src/*.cpp src/*.hpp)
@@ -41,14 +58,17 @@ if(EMSCRIPTEN)
     string(CONCAT LD41_CLIENT_LINK_FLAGS
         " -s TOTAL_MEMORY=33554432"
         " -s DISABLE_EXCEPTION_CATCHING=0"
+        " -s FORCE_FILESYSTEM=1"
         " -s USE_SDL=2"
         " -s USE_SDL_IMAGE=2"
         " -s USE_SDL_NET=2"
         " -s USE_FREETYPE=1"
-        " --preload-file ${LD41_CLIENT_DATA_DIR}@data"
         " --shell-file ${LD41_CLIENT_SHELL}")
     string(CONCAT LD41_CLIENT_LINK_FLAGS_DEBUG
         " -g4"
+        " --cpuprofiler"
+        " --memoryprofiler")
+    string(CONCAT LD41_CLIENT_LINK_FLAGS_RELWITHDEBINFO
         " --cpuprofiler"
         " --memoryprofiler")
     set_target_properties(ld41_client PROPERTIES
@@ -56,7 +76,7 @@ if(EMSCRIPTEN)
         SUFFIX .html
         LINK_FLAGS "${LD41_CLIENT_LINK_FLAGS}"
         LINK_FLAGS_DEBUG "${LD41_CLIENT_LINK_FLAGS_DEBUG}"
-        LINK_DEPENDS "${LD41_CLIENT_SHELL};${LD41_CLIENT_DATA_FILES}"
+        LINK_DEPENDS "${LD41_CLIENT_SHELL}"
         RUNTIME_OUTPUT_DIRECTORY "${LD41_WWW_DIR}")
     em_link_js_library(ld41_client ${LD41_CLIENT_JS})
     target_link_libraries(ld41_client
@@ -66,7 +86,7 @@ if(EMSCRIPTEN)
         sushi
         msdfgen
         soloud)
-    add_dependencies(ld41_client ld41_client_static)
+    add_dependencies(ld41_client ld41_client_static ld41_data)
 
     add_dependencies(ld41 ld41_client)
 endif()

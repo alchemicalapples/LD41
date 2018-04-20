@@ -31,16 +31,30 @@ Debug builds are crazy slow, only use if necessary.
 $ ninja ld41_client
 ```
 
-#### Output
+#### Output Files
 
 ```shell
-$ ls www
-ld41_client.data
-ld41_client.html
-ld41_client.html.mem
-ld41_client.js
-scripts/
+$ find www
+www
+www/ld41_client.data
+www/ld41_client.data.js
+www/ld41_client.html
+www/ld41_client.html.mem
+www/ld41_client.js
+www/scripts
+www/scripts/config.js
 ```
+
+The main file is `ld41_client.html`. Open it in a browser to launch the game.
+
+Other files:
+
+| File                   | Description                          |
+| :--                    | :--                                  |
+| `ld41_client.data`     | Holds the entire `data/` filesystem. |
+| `ld41_client.data.js`  | Loads the `.data` file.              |
+| `ld41_client.html.mem` | Initial memory state (statics).      |
+| `scripts/config.json`  | Configuration file.                  |
 
 #### Running
 
