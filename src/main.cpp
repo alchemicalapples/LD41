@@ -389,6 +389,8 @@ int main() try {
         renderer.end();
 
         SDL_GL_SwapWindow(g_window);
+
+        lua.collect_garbage();
     };
 
     std::cout << "Success." << std::endl;
