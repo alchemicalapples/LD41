@@ -31,9 +31,6 @@ if(EMSCRIPTEN)
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/static "${LD41_WWW_DIR}"
         SOURCES ${LD41_CLIENT_STATIC})
 
-    # Client Shell
-    set(LD41_CLIENT_SHELL ${CMAKE_SOURCE_DIR}/src/shell.html CACHE PATH "Emscripten Shell")
-
     # Client JS
     file(GLOB_RECURSE LD41_CLIENT_JS "src/*.js")
 
@@ -54,7 +51,7 @@ if(EMSCRIPTEN)
 
     # Client C++
     file(GLOB_RECURSE LD41_CLIENT_SRCS src/*.cpp src/*.hpp)
-    add_executable(ld41_client ${LD41_CLIENT_SRCS} ${LD41_CLIENT_JS} ${LD41_CLIENT_SHELL})
+    add_executable(ld41_client ${LD41_CLIENT_SRCS} ${LD41_CLIENT_JS})
     string(CONCAT LD41_CLIENT_LINK_FLAGS
         " -s TOTAL_MEMORY=33554432"
         " -s DISABLE_EXCEPTION_CATCHING=0"
@@ -62,8 +59,7 @@ if(EMSCRIPTEN)
         " -s USE_SDL=2"
         " -s USE_SDL_IMAGE=2"
         " -s USE_SDL_NET=2"
-        " -s USE_FREETYPE=1"
-        " --shell-file ${LD41_CLIENT_SHELL}")
+        " -s USE_FREETYPE=1")
     string(CONCAT LD41_CLIENT_LINK_FLAGS_DEBUG
         " -g4"
         " --cpuprofiler"
@@ -73,11 +69,10 @@ if(EMSCRIPTEN)
         " --memoryprofiler")
     set_target_properties(ld41_client PROPERTIES
         CXX_STANDARD ${LD41_CXX_STANDARD}
-        SUFFIX .html
+        SUFFIX .js
         LINK_FLAGS "${LD41_CLIENT_LINK_FLAGS}"
         LINK_FLAGS_DEBUG "${LD41_CLIENT_LINK_FLAGS_DEBUG}"
         LINK_FLAGS_RELWITHDEBINFO "${LD41_CLIENT_LINK_FLAGS_RELWITHDEBINFO}"
-        LINK_DEPENDS "${LD41_CLIENT_SHELL}"
         RUNTIME_OUTPUT_DIRECTORY "${LD41_WWW_DIR}")
     em_link_js_library(ld41_client ${LD41_CLIENT_JS})
     target_link_libraries(ld41_client
