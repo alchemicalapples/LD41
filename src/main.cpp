@@ -315,7 +315,7 @@ int main() try {
 
         auto delta = std::chrono::duration<double>(delta_time).count();
 
-        SDL_Event event[2]; // Array is need to work around stack issue in SDL_PollEvent.
+        SDL_Event event[2]; // Array is needed to work around stack issue in SDL_PollEvent.
         while (SDL_PollEvent(&event[0]))
         {
             if (handle_gui_input(event[0])) break;
