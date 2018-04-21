@@ -15,6 +15,9 @@
 #include <glm/gtc/matrix_inverse.hpp>
 
 #include <sol.hpp>
+#include <soloud.h>
+#include <soloud_wav.h>
+#include <soloud_wavstream.h>
 
 #include <emscripten.h>
 #include <emscripten/html5.h>
@@ -58,6 +61,11 @@ int main() try {
 
     auto input_table = lua.create_named_table("input");
 
+    std::cout << "Initializing soloud..." << std::endl;
+
+    SoLoud::Soloud soloud;
+    soloud.init();
+
     std::cout << "Creating caches..." << std::endl;
 
     auto mesh_cache = resource_cache<sushi::static_mesh, std::string>([](const std::string& name){
@@ -77,6 +85,36 @@ int main() try {
             lua.script_file("data/scripts/"+name+".lua", env);
             return env;
         }};
+
+    auto sfx_cache = resource_cache<SoLoud::Wav, std::string>{[&](const std::string& name) {
+            auto wav = std::make_shared<SoLoud::Wav>();
+            wav->load(("data/sound/sfx/"+name+".wav").c_str());
+            return wav;
+        }};
+
+    auto music_cache = resource_cache<SoLoud::Wav, std::string>{[&](const std::string& name) {
+            auto wav = std::make_shared<SoLoud::Wav>();
+            wav->load(("data/sound/music/"+name+".ogg").c_str());
+            wav->setLooping(1);
+            return wav;
+        }};
+
+    std::cout << "Setting helper functions..." << std::endl;
+
+    auto play_sfx = [&](const std::string& name) {
+        auto wav_ptr = sfx_cache.get(name);
+        soloud.stopAudioSource(*wav_ptr);
+        soloud.play(*wav_ptr);
+    };
+
+    auto play_music = [&](const std::string& name) {
+        auto wav_ptr = music_cache.get(name);
+        soloud.stopAudioSource(*wav_ptr);
+        soloud.play(*wav_ptr);
+    };
+
+    lua["play_sfx"] = play_sfx;
+    lua["play_music"] = play_music;
 
     std::cout << "Initializing SDL..." << std::endl;
 

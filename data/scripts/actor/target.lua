@@ -28,5 +28,6 @@ function on_collide(eid, other, manifold)
 
     entities:destroy_entity(eid)
 
+    play_sfx("test")
     print("BOOM")
 end
