@@ -26,5 +26,17 @@
         "script": {
             "name": "actor/target"
         }
+    },
+    {
+      "position": {
+          "x": 5,
+          "y": 0
+      },
+      "detector":{
+        "radius": 3
+
+      }
+
     }
+
 ]

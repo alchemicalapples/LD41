@@ -77,6 +77,17 @@ struct script {
 REGISTER(script,
          MEMBER(name))
 
+
+struct detector {
+  float radius;
+  std::vector<ember_database::ent_id> entity_list;
+};
+
+
+REGISTER(detector,
+         MEMBER(radius),
+         MEMBER(entity_list))
+
 } //namespace component
 
 #undef MEMBER

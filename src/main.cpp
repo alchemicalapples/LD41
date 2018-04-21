@@ -19,6 +19,10 @@
 #include <soloud_wav.h>
 #include <soloud_wavstream.h>
 
+
+
+
+////
 #include <emscripten.h>
 #include <emscripten/html5.h>
 
@@ -58,6 +62,7 @@ int main() try {
     scripting::register_type<component::velocity>(component_table);
     scripting::register_type<component::aabb>(component_table);
     scripting::register_type<component::script>(component_table);
+    scripting::register_type<component::detector>(component_table);
 
     auto input_table = lua.create_named_table("input");
 
@@ -69,7 +74,11 @@ int main() try {
     std::cout << "Creating caches..." << std::endl;
 
     auto mesh_cache = resource_cache<sushi::static_mesh, std::string>([](const std::string& name){
-            return sushi::load_static_mesh_file("data/models/" + name + ".obj");
+
+
+
+
+  return sushi::load_static_mesh_file("data/models/" + name + ".obj");
         });
 
     auto texture_cache = resource_cache<sushi::texture_2d, std::string>([](const std::string& name){
@@ -420,6 +429,29 @@ int main() try {
                 sushi::set_texture(0, *texture_cache.get("test"));
                 sushi::draw_mesh(sprite_mesh);
             }
+        });
+
+        //Billi
+        entities.visit([&](ember_database::ent_id tower_eid, component::detector& detector, const component::position& tower_pos){
+            entities.visit([&](ember_database::ent_id enemy_eid, const component::position& enemy_pos){
+              auto iter = std::find(detector.entity_list.begin(),detector.entity_list.end(),enemy_eid);
+              bool found =  iter != detector.entity_list.end();
+              auto sqr = [](auto x) { return x*x; };
+              bool within_radius = detector.radius > sqrt(sqr(tower_pos.x-enemy_pos.x)+sqr(tower_pos.y - enemy_pos.y));
+
+
+              // add entity_id
+              if(!found && within_radius){
+                detector.entity_list.push_back(enemy_eid);
+                std::cout<<"Entity_id number " << enemy_eid.get_index()<< " triggered the detector number " << tower_eid.get_index()<<std::endl;
+
+              }
+              if(found && !within_radius){
+                detector.entity_list.erase(iter);
+                std::cout<<"Entity_id number " << enemy_eid.get_index()<< " left the detector number " << tower_eid.get_index()<<std::endl;
+
+              }
+            });
         });
 
         renderer.begin();
