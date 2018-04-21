@@ -88,6 +88,15 @@ REGISTER(detector,
          MEMBER(radius),
          MEMBER(entity_list))
 
+struct tower{
+  ember_database::ent_id current_target;
+  double time;
+
+};
+REGISTER(tower,
+         MEMBER(current_target),
+
+                  MEMBER(time))
 } //namespace component
 
 #undef MEMBER

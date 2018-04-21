@@ -8,25 +8,7 @@
             "name": "actor/player"
         }
     },
-    {
-        "position": {
-            "x": 5,
-            "y": 0
-        },
-        "velocity": {
-            "vx": 0,
-            "vy": 5
-        },
-        "aabb": {
-            "left": -0.5,
-            "right": 0.5,
-            "bottom": -0.5,
-            "top": 0.5
-        },
-        "script": {
-            "name": "actor/target"
-        }
-    },
+
     {
       "position": {
           "x": 5,
@@ -35,6 +17,12 @@
       "detector":{
         "radius": 3
 
+      },
+      "tower":{
+          "time":1
+      },
+      "script": {
+          "name": "actor/tower"
       }
 
     }

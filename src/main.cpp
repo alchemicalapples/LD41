@@ -63,6 +63,7 @@ int main() try {
     scripting::register_type<component::aabb>(component_table);
     scripting::register_type<component::script>(component_table);
     scripting::register_type<component::detector>(component_table);
+    scripting::register_type<component::tower>(component_table);
 
     auto input_table = lua.create_named_table("input");
 
@@ -434,22 +435,47 @@ int main() try {
         //Billi
         entities.visit([&](ember_database::ent_id tower_eid, component::detector& detector, const component::position& tower_pos){
             entities.visit([&](ember_database::ent_id enemy_eid, const component::position& enemy_pos){
+              if(tower_eid == enemy_eid)
+                return;
               auto iter = std::find(detector.entity_list.begin(),detector.entity_list.end(),enemy_eid);
               bool found =  iter != detector.entity_list.end();
               auto sqr = [](auto x) { return x*x; };
               bool within_radius = detector.radius > sqrt(sqr(tower_pos.x-enemy_pos.x)+sqr(tower_pos.y - enemy_pos.y));
 
 
+
+              std::function<void(ember_database::ent_id eid, ember_database::ent_id other)>
+                  on_enter = [](auto,auto){};
+              if (entities.has_component<component::script>(tower_eid)) {
+                  auto& script = entities.get_component<component::script>(tower_eid);
+                  auto script_ptr = environment_cache.get(script.name);
+                  auto on_enter_proxy = (*script_ptr)["on_enter"];
+                  if (on_enter_proxy.valid()) {
+                      on_enter = on_enter_proxy;
+                  }
+              }
+
               // add entity_id
               if(!found && within_radius){
                 detector.entity_list.push_back(enemy_eid);
                 std::cout<<"Entity_id number " << enemy_eid.get_index()<< " triggered the detector number " << tower_eid.get_index()<<std::endl;
-
+                on_enter(tower_eid, enemy_eid);
               }
+              std::function<void(ember_database::ent_id eid, ember_database::ent_id other)>
+                  on_leave = [](auto,auto){};
+              if (entities.has_component<component::script>(tower_eid)) {
+                  auto& script = entities.get_component<component::script>(tower_eid);
+                  auto script_ptr = environment_cache.get(script.name);
+                  auto on_leave_proxy = (*script_ptr)["on_leave"];
+                  if (on_leave_proxy.valid()) {
+                      on_leave = on_leave_proxy;
+                  }
+              }
+              //remove entity_id
               if(found && !within_radius){
                 detector.entity_list.erase(iter);
                 std::cout<<"Entity_id number " << enemy_eid.get_index()<< " left the detector number " << tower_eid.get_index()<<std::endl;
-
+                on_leave(tower_eid, enemy_eid);
               }
             });
         });
