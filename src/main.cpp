@@ -315,11 +315,11 @@ int main() try {
 
         auto delta = std::chrono::duration<double>(delta_time).count();
 
-        SDL_Event event;
-        while (SDL_PollEvent(&event))
+        SDL_Event event[2]; // Array is need to work around stack issue in SDL_PollEvent.
+        while (SDL_PollEvent(&event[0]))
         {
-            if (handle_gui_input(event)) break;
-            if (handle_game_input(event)) break;
+            if (handle_gui_input(event[0])) break;
+            if (handle_game_input(event[0])) break;
         }
 
         const Uint8 *keys = SDL_GetKeyboardState(NULL);
