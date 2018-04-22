@@ -1,0 +1,46 @@
+{
+    "entities": [
+        {
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "ball": {},
+            "script": {
+                "name": "actor/ball"
+            },
+            "animation": {
+                "name": "player",
+                "cycle": "walk",
+                "frame": 0,
+                "t": 0
+            }
+        },
+
+        {
+            "position": {
+                "x": 5,
+                "y": 0
+            },
+            "detector":{
+                "radius": 3
+
+            },
+            "tower":{
+                "time":1
+            },
+            "script": {
+                "name": "actor/tower"
+            },
+            "animation": {
+                "name": "enemy",
+                "cycle": "walk",
+                "frame": 0,
+                "t": 0
+            }
+        }
+    ],
+    "tiles": {
+
+    }
+}

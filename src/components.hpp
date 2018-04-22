@@ -108,6 +108,19 @@ REGISTER(ball,
          MEMBER(power),
          MEMBER(marker))
 
+struct animation {
+    std::string name;
+    std::string cycle;
+    int frame = 0;
+    float t = 0;
+};
+
+REGISTER(animation,
+         MEMBER(name),
+         MEMBER(cycle),
+         MEMBER(frame),
+         MEMBER(t))
+
 } //namespace component
 
 #undef MEMBER

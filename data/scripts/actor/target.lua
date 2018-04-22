@@ -22,8 +22,12 @@ function on_collide(eid, other, manifold)
         vel.vx = dir.vx
         vel.vy = dir.vy
         local ent = entities:create_entity()
+        local animation = component.animation.new()
+        animation.name = "target"
+        animation.cycle = "walk"
         entities:create_component(ent, pos)
         entities:create_component(ent, vel)
+        entities:create_component(ent, animation)
     end
 
     entities:destroy_entity(eid)

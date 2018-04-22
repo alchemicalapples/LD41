@@ -79,6 +79,7 @@ int main() try {
     scripting::register_type<component::detector>(component_table);
     scripting::register_type<component::tower>(component_table);
     scripting::register_type<component::ball>(component_table);
+    scripting::register_type<component::animation>(component_table);
 
     auto input_table = lua.create_named_table("input");
 
@@ -100,6 +101,13 @@ int main() try {
     auto texture_cache = resource_cache<sushi::texture_2d, std::string>([](const std::string& name){
             return sushi::load_texture_2d("data/textures/" + name + ".png", true, false, true, false);
         });
+
+    auto animation_cache = resource_cache<nlohmann::json, std::string>([](const std::string& name) {
+        std::ifstream file ("data/animations/" + name + ".json");
+        nlohmann::json json;
+        file >> json;
+        return std::make_shared<nlohmann::json>(json);
+    });
 
     auto font_cache = resource_cache<msdf_font, std::string>([](const std::string& fontname){
             return msdf_font("data/fonts/"+fontname+".ttf");
@@ -202,6 +210,19 @@ int main() try {
         {{0.f, 0.f},{0.f, 1.f},{1.f, 1.f},{1.f, 0.f}},
         {{{{0,0,0},{1,1,1},{2,2,2}}},{{{2,2,2},{3,3,3},{0,0,0}}}}
     );
+    
+    sushi::static_mesh tile_meshes[6];
+
+    for (int i = 0; i < 6; i++) {
+        float vOffSetRight = (i + 1) * (1.f/8);
+        float vOffSetLeft = ((i + 1) * (1.f/8)) - 0.125f;
+        tile_meshes[i] = sushi::load_static_mesh_data(
+            {{-0.5f, 0.5f, 0.f},{-0.5f, -0.5f, 0.f},{0.5f, -0.5f, 0.f},{0.5f, 0.5f, 0.f}},
+            {{0.f, 1.f, 0.f},{0.f, 1.f, 0.f},{0.f, 1.f, 0.f},{0.f, 1.f, 0.f}},
+            {{vOffSetLeft, 0.f},{vOffSetLeft, 1.f},{vOffSetRight, 1.f},{vOffSetRight, 0.f}},
+            {{{{0,0,0},{1,1,1},{2,2,2}}},{{{2,2,2},{3,3,3},{0,0,0}}}}
+        );
+    }
 
     auto renderer = sushi_renderer({display_width, display_height}, program, program_msdf, font_cache, texture_cache);
 
@@ -231,7 +252,7 @@ int main() try {
     std::cout << "Loading stage..." << std::endl;
 
     {
-        std::ifstream file ("data/stages/test.json");
+        std::ifstream file ("data/stages/level1.json");
         nlohmann::json json;
         file >> json;
 
@@ -269,7 +290,7 @@ int main() try {
 
         auto loader_ptr = environment_cache.get("system/loader");
 
-        (*loader_ptr)["load_world"](json_to_lua(json, json_to_lua));
+        (*loader_ptr)["load_world"](json_to_lua(json["entities"], json_to_lua));
     }
 
     auto handle_game_input = [&](const SDL_Event& event){
@@ -424,6 +445,8 @@ int main() try {
             (*environment_cache.get(script.name))["update"](eid, delta);
         });
 
+        // Render Tiles
+
         // Render
 
         glClearColor(0,0,0,1);
@@ -434,15 +457,30 @@ int main() try {
 
         auto frustum = sushi::frustum(proj*view);
 
-        entities.visit([&](const component::position& pos){
-            if (frustum.contains({pos.x, pos.y, 0.f}, std::sqrt(0.5*0.5*2.f))) {
-                auto modelmat = glm::mat4(1);
-                modelmat = glm::translate(modelmat, {pos.x, pos.y, 0});
+        // Render Tiles
+        
+        // Render Entities
 
-                sushi::set_program(program);
-                sushi::set_uniform("normal_mat", glm::inverseTranspose(view*modelmat));
-                sushi::set_uniform("MVP", (proj*view*modelmat));
-                sushi::set_texture(0, *texture_cache.get("test"));
+        entities.visit([&](const component::position& pos, component::animation& anim){
+            if (frustum.contains({pos.x, pos.y, 0.f}, std::sqrt(0.5*0.5*2.f))) {
+                auto modelmat = glm::mat4(1); // need
+                modelmat = glm::translate(modelmat, {pos.x, pos.y, 0}); // need
+
+                // animation code
+                auto jsonAnim = *animation_cache.get(anim.name);
+                auto tMilliSecond = float(jsonAnim[anim.cycle]["frame"][anim.frame]["t"]) / 1000.f;
+                anim.t += delta / 10;
+                if (anim.t > tMilliSecond) {
+                    int nextFrame = jsonAnim[anim.cycle]["frame"][anim.frame]["nextFrame"];
+                    anim.frame = nextFrame;
+                    anim.t = 0;
+                }
+                auto pathToTexture = jsonAnim[anim.cycle]["frame"][anim.frame]["path"];
+                sushi::set_texture(0, *texture_cache.get(pathToTexture));
+
+                sushi::set_program(program); // need
+                sushi::set_uniform("normal_mat", glm::inverseTranspose(view*modelmat)); // need
+                sushi::set_uniform("MVP", (proj*view*modelmat)); // need
                 sushi::draw_mesh(sprite_mesh);
             }
         });
