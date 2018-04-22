@@ -100,13 +100,17 @@ struct ball {
     float angle = 0;
     float power = 0;
     ember_database::ent_id marker;
+    float land_x;
+    float land_y;
 };
 
 REGISTER(ball,
          MEMBER(state),
          MEMBER(angle),
          MEMBER(power),
-         MEMBER(marker))
+         MEMBER(marker),
+         MEMBER(land_x),
+         MEMBER(land_y))
 
 struct animation {
     std::string name;

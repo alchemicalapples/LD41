@@ -17,6 +17,7 @@ function load_entity(data)
             print("Uknown component: "..k)
         end
     end
+    return ent
 end
 
 function load_world(data)

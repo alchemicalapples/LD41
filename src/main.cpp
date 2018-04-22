@@ -91,11 +91,7 @@ int main() try {
     std::cout << "Creating caches..." << std::endl;
 
     auto mesh_cache = resource_cache<sushi::static_mesh, std::string>([](const std::string& name){
-
-
-
-
-  return sushi::load_static_mesh_file("data/models/" + name + ".obj");
+            return sushi::load_static_mesh_file("data/models/" + name + ".obj");
         });
 
     auto texture_cache = resource_cache<sushi::texture_2d, std::string>([](const std::string& name){
@@ -146,8 +142,60 @@ int main() try {
         soloud.play(*wav_ptr);
     };
 
+    auto json_to_lua = [&](const nlohmann::json& json, auto& json_to_lua) -> sol::object {
+        using value_t = nlohmann::json::value_t;
+        switch (json.type()) {
+            case value_t::null:
+                return sol::make_object(lua, sol::nil);
+            case value_t::object: {
+                auto obj = lua.create_table();
+                for (auto it = json.begin(); it != json.end(); ++it) {
+                    obj[it.key()] = json_to_lua(it.value(), json_to_lua);
+                }
+                return obj;
+            }
+            case value_t::array: {
+                auto obj = lua.create_table();
+                for (auto i = 0; i < json.size(); ++i) {
+                    obj[i+1] = json_to_lua(json[i], json_to_lua);
+                }
+                return obj;
+            }
+            case value_t::string:
+                return sol::make_object(lua, json.get<std::string>());
+            case value_t::boolean:
+                return sol::make_object(lua, json.get<bool>());
+            case value_t::number_integer:
+            case value_t::number_unsigned:
+            case value_t::number_float:
+                return sol::make_object(lua, json.get<double>());
+            default:
+                return sol::make_object(lua, sol::nil);
+        }
+    };
+
+    auto json_to_lua_rec = [&](const nlohmann::json& json) {
+        return json_to_lua(json, json_to_lua);
+    };
+
+    auto load_stage = [&](const std::string& name) {
+        std::ifstream file ("data/stages/" + name + ".json");
+        nlohmann::json json;
+        file >> json;
+        auto loader_ptr = environment_cache.get("system/loader");
+        (*loader_ptr)["load_world"](json_to_lua_rec(json["entities"]));
+    };
+
+    auto entity_from_json = [&](const std::string& str) {
+        auto json = nlohmann::json::parse(str);
+        auto loader_ptr = environment_cache.get("system/loader");
+        auto eid = (*loader_ptr)["load_entity"](json_to_lua_rec(json)).get<ember_database::ent_id>();
+        return eid;
+    };
+
     lua["play_sfx"] = play_sfx;
     lua["play_music"] = play_music;
+    lua["entitiy_from_json"] = entity_from_json;
 
     std::cout << "Initializing SDL..." << std::endl;
 
@@ -210,7 +258,7 @@ int main() try {
         {{0.f, 0.f},{0.f, 1.f},{1.f, 1.f},{1.f, 0.f}},
         {{{{0,0,0},{1,1,1},{2,2,2}}},{{{2,2,2},{3,3,3},{0,0,0}}}}
     );
-    
+
     sushi::static_mesh tile_meshes[6];
 
     for (int i = 0; i < 6; i++) {
@@ -251,47 +299,7 @@ int main() try {
 
     std::cout << "Loading stage..." << std::endl;
 
-    {
-        std::ifstream file ("data/stages/level1.json");
-        nlohmann::json json;
-        file >> json;
-
-        auto json_to_lua = [&](const nlohmann::json& json, auto& json_to_lua) -> sol::object {
-            using value_t = nlohmann::json::value_t;
-            switch (json.type()) {
-                case value_t::null:
-                    return sol::make_object(lua, sol::nil);
-                case value_t::object: {
-                    auto obj = lua.create_table();
-                    for (auto it = json.begin(); it != json.end(); ++it) {
-                        obj[it.key()] = json_to_lua(it.value(), json_to_lua);
-                    }
-                    return obj;
-                }
-                case value_t::array: {
-                    auto obj = lua.create_table();
-                    for (auto i = 0; i < json.size(); ++i) {
-                        obj[i+1] = json_to_lua(json[i], json_to_lua);
-                    }
-                    return obj;
-                }
-                case value_t::string:
-                    return sol::make_object(lua, json.get<std::string>());
-                case value_t::boolean:
-                    return sol::make_object(lua, json.get<bool>());
-                case value_t::number_integer:
-                case value_t::number_unsigned:
-                case value_t::number_float:
-                    return sol::make_object(lua, json.get<double>());
-                default:
-                    return sol::make_object(lua, sol::nil);
-            }
-        };
-
-        auto loader_ptr = environment_cache.get("system/loader");
-
-        (*loader_ptr)["load_world"](json_to_lua(json["entities"], json_to_lua));
-    }
+    load_stage("level1");
 
     auto handle_game_input = [&](const SDL_Event& event){
         switch (event.type) {
@@ -458,7 +466,7 @@ int main() try {
         auto frustum = sushi::frustum(proj*view);
 
         // Render Tiles
-        
+
         // Render Entities
 
         entities.visit([&](const component::position& pos, component::animation& anim){
@@ -475,12 +483,17 @@ int main() try {
                     anim.frame = nextFrame;
                     anim.t = 0;
                 }
-                auto pathToTexture = jsonAnim[anim.cycle]["frame"][anim.frame]["path"];
-                sushi::set_texture(0, *texture_cache.get(pathToTexture));
-
-                sushi::set_program(program); // need
-                sushi::set_uniform("normal_mat", glm::inverseTranspose(view*modelmat)); // need
-                sushi::set_uniform("MVP", (proj*view*modelmat)); // need
+                // test animation 
+                //if (anim.name == "player") {
+                    auto pathToTexture = jsonAnim[anim.cycle]["frame"][anim.frame]["path"];
+                    sushi::set_texture(0, *texture_cache.get(pathToTexture));
+                //}
+                //else {
+                //    sushi::set_texture(0, *texture_cache.get("test"));
+                //}
+                sushi::set_program(program);
+                sushi::set_uniform("normal_mat", glm::inverseTranspose(view*modelmat));
+                sushi::set_uniform("MVP", (proj*view*modelmat));
                 sushi::draw_mesh(sprite_mesh);
             }
         });
