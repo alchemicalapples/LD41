@@ -195,6 +195,19 @@ int main() try {
         {{0.f, 0.f},{0.f, 1.f},{1.f, 1.f},{1.f, 0.f}},
         {{{{0,0,0},{1,1,1},{2,2,2}}},{{{2,2,2},{3,3,3},{0,0,0}}}}
     );
+    
+    sushi::static_mesh tile_meshes[6];
+
+    for (int i = 0; i < 6; i++) {
+        float vOffSetRight = (i + 1) * (1.f/8);
+        float vOffSetLeft = ((i + 1) * (1.f/8)) - 0.125f;
+        tile_meshes[i] = sushi::load_static_mesh_data(
+            {{-0.5f, 0.5f, 0.f},{-0.5f, -0.5f, 0.f},{0.5f, -0.5f, 0.f},{0.5f, 0.5f, 0.f}},
+            {{0.f, 1.f, 0.f},{0.f, 1.f, 0.f},{0.f, 1.f, 0.f},{0.f, 1.f, 0.f}},
+            {{vOffSetLeft, 0.f},{vOffSetLeft, 1.f},{vOffSetRight, 1.f},{vOffSetRight, 0.f}},
+            {{{{0,0,0},{1,1,1},{2,2,2}}},{{{2,2,2},{3,3,3},{0,0,0}}}}
+        );
+    }
 
     auto renderer = sushi_renderer({display_width, display_height}, program, program_msdf, font_cache, texture_cache);
 
@@ -419,7 +432,7 @@ int main() try {
 
         // Render Tiles
 
-        // Render Entities
+        // Render
 
         glClearColor(0,0,0,1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -429,10 +442,14 @@ int main() try {
 
         auto frustum = sushi::frustum(proj*view);
 
+        // Render Tiles
+        
+        // Render Entities
+
         entities.visit([&](const component::position& pos, component::animation& anim){
             if (frustum.contains({pos.x, pos.y, 0.f}, std::sqrt(0.5*0.5*2.f))) {
-                auto modelmat = glm::mat4(1);
-                modelmat = glm::translate(modelmat, {pos.x, pos.y, 0});
+                auto modelmat = glm::mat4(1); // need
+                modelmat = glm::translate(modelmat, {pos.x, pos.y, 0}); // need
 
                 // animation code
                 auto jsonAnim = *animation_cache.get(anim.name);
@@ -446,9 +463,9 @@ int main() try {
                 auto pathToTexture = jsonAnim[anim.cycle]["frame"][anim.frame]["path"];
                 sushi::set_texture(0, *texture_cache.get(pathToTexture));
 
-                sushi::set_program(program);
-                sushi::set_uniform("normal_mat", glm::inverseTranspose(view*modelmat));
-                sushi::set_uniform("MVP", (proj*view*modelmat));
+                sushi::set_program(program); // need
+                sushi::set_uniform("normal_mat", glm::inverseTranspose(view*modelmat)); // need
+                sushi::set_uniform("MVP", (proj*view*modelmat)); // need
                 sushi::draw_mesh(sprite_mesh);
             }
         });
