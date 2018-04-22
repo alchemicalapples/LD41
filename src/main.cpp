@@ -86,6 +86,9 @@ int main() try {
     sol::state lua(sol::c_call<decltype(&sol_panic), &sol_panic>);
     lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::string);
 
+    auto nlohmann_table = lua.create_named_table("component");
+    nlohmann_table.new_usertype<nlohmann::json>("json");
+
     lua["entities"] = std::ref(entities);
 
     auto global_table = sol::table(lua.globals());
@@ -216,7 +219,7 @@ int main() try {
 
     lua["play_sfx"] = play_sfx;
     lua["play_music"] = play_music;
-    lua["entitiy_from_json"] = entity_from_json;
+    lua["entity_from_json"] = entity_from_json;
 
     std::cout << "Initializing SDL..." << std::endl;
 

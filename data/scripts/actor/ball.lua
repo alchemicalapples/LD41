@@ -68,24 +68,11 @@ function ball_states.flying(eid, ball, delta)
     local pos = entities:get_component(eid, component.position)
     local vel = entities:get_component(eid, component.velocity)
     if math.abs(ball.land_x - pos.x) < math.abs(vel.vx * delta) then
-        local tower_eid = entities:create_entity()
+        local tower_eid = entity_from_json(ball.tower)
         local tpos = component.position.new()
         tpos.x = ball.land_x
         tpos.y = ball.land_y
-        local ttower = component.tower.new()
-        ttower.time = 1
-        local detector = component.detector.new()
-        detector.radius = 3
-        local tscript = component.script.new()
-        tscript.name = "actor/tower"
-        local tanim = component.animation.new()
-        tanim.name = "enemy"
-        tanim.cycle = "walk"
         entities:create_component(tower_eid, tpos)
-        entities:create_component(tower_eid, ttower)
-        entities:create_component(tower_eid, detector)
-        entities:create_component(tower_eid, tscript)
-        entities:create_component(tower_eid, tanim)
         entities:destroy_entity(eid)
     end
 end

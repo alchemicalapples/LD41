@@ -5,7 +5,9 @@
                 "x": 0,
                 "y": -10
             },
-            "ball": {},
+            "ball": {
+                "tower": "{\"tower\": {\"time\": 1}, \"detector\": {\"radius\": 3}, \"script\": {\"name\": \"actor/tower\"}, \"animation\": {\"name\": \"enemy\", \"cycle\": \"walk\"}}"
+            },
             "script": {
                 "name": "actor/ball"
             },
