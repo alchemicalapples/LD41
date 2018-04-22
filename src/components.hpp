@@ -88,12 +88,14 @@ REGISTER(detector,
 
 struct tower {
     ember_database::ent_id current_target;
-    double time;
+    double time = 0;
+    double delay;
 };
 
 REGISTER(tower,
          MEMBER(current_target),
-         MEMBER(time))
+         MEMBER(time),
+         MEMBER(delay))
 
 struct ball {
     std::string state = "none";
@@ -102,7 +104,6 @@ struct ball {
     ember_database::ent_id marker;
     float land_x;
     float land_y;
-    std::string tower;
     float reset_x;
     float reset_y;
 };
@@ -114,7 +115,6 @@ REGISTER(ball,
          MEMBER(marker),
          MEMBER(land_x),
          MEMBER(land_y),
-         MEMBER(tower),
          MEMBER(reset_x),
          MEMBER(reset_y))
 

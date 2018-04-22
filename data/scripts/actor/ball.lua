@@ -71,7 +71,7 @@ function ball_states.flying(eid, ball, delta)
     local pos = entities:get_component(eid, component.position)
     local vel = entities:get_component(eid, component.velocity)
     if math.abs(ball.land_x - pos.x) < math.abs(vel.vx * delta) then
-        local tower_eid = entity_from_json(ball.tower)
+        local tower_eid = entity_from_json(get_selected_tower())
         local tpos = component.position.new()
         tpos.x = ball.land_x
         tpos.y = ball.land_y

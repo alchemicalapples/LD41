@@ -212,8 +212,7 @@ int main() try {
         (*loader_ptr)["load_world"](json_to_lua_rec(json["entities"]));
     };
 
-    auto entity_from_json = [&](const std::string& str) {
-        auto json = nlohmann::json::parse(str);
+    auto entity_from_json = [&](const nlohmann::json& json) {
         auto loader_ptr = environment_cache.get("system/loader");
         auto eid = (*loader_ptr)["load_entity"](json_to_lua_rec(json)).get<ember_database::ent_id>();
         return eid;

@@ -3,7 +3,7 @@ local pos = entities:get_component(eid, component.position)
 local tower = entities:get_component(eid, component.tower)
   local detector = entities:get_component(eid, component.detector)
   tower.time = tower.time + delta
-  if #detector.entity_list > 0 and tower.time > 4  then
+  if #detector.entity_list > 0 and tower.time > tower.delay then
       tower.time = 0
       local enemy_pos = entities:get_component(detector.entity_list[1], component.position)
       local bpos = component.position.new()
