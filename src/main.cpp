@@ -36,6 +36,27 @@
 
 using namespace std::literals;
 
+sushi::static_mesh sprite_mesh(const sushi::texture_2d& texture) {
+    auto left = -texture.width / 2.f;
+    auto right = texture.width / 2.f;
+    auto bottom = -texture.height / 2.f;
+    auto top = texture.height / 2.f;
+
+    return sushi::load_static_mesh_data(
+        {{left, bottom, 0.f},{left, top, 0.f},{right, top, 0.f},{right, bottom, 0.f}},
+        {{0.f, 0.f, 1.f},{0.f, 0.f, 1.f},{0.f, 0.f, 1.f},{0.f, 0.f, 1.f}},
+        {{0.f, 0.f},{0.f, 1.f},{1.f, 1.f},{1.f, 0.f}},
+        {{{{0,0,0},{1,1,1},{2,2,2}}},{{{2,2,2},{3,3,3},{0,0,0}}}});
+}
+
+template <typename... Ts>
+auto vectorify(Ts&&... ts) {
+    std::vector<std::common_type_t<Ts...>> rv;
+    rv.reserve(sizeof...(ts));
+    (rv.push_back(std::forward<Ts>(ts)), ...);
+    return rv;
+}
+
 std::function<void()> loop;
 void main_loop() try {
     loop();
@@ -95,7 +116,7 @@ int main() try {
         });
 
     auto texture_cache = resource_cache<sushi::texture_2d, std::string>([](const std::string& name){
-            return sushi::load_texture_2d("data/textures/" + name + ".png", true, false, true, false);
+            return sushi::load_texture_2d("data/textures/" + name + ".png", false, false, true, false);
         });
 
     auto animation_cache = resource_cache<nlohmann::json, std::string>([](const std::string& name) {
@@ -227,7 +248,7 @@ int main() try {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
     auto glcontext = SDL_GL_CreateContext(g_window);
 
-    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_DEPTH_TEST);
 
     std::cout << "Loading shaders..." << std::endl;
 
@@ -251,6 +272,9 @@ int main() try {
     glBindAttribLocation(program_msdf.get(), sushi::attrib_location::POSITION, "position");
     glBindAttribLocation(program_msdf.get(), sushi::attrib_location::TEXCOORD, "texcoord");
     glBindAttribLocation(program_msdf.get(), sushi::attrib_location::NORMAL, "normal");
+
+    auto framebuffer = sushi::create_framebuffer(vectorify(sushi::create_uninitialized_texture_2d(320, 240)));
+    auto framebuffer_mesh = sprite_mesh(framebuffer.color_texs[0]);
 
     auto sprite_mesh = sushi::load_static_mesh_data(
         {{-0.5f, 0.5f, 0.f},{-0.5f, -0.5f, 0.f},{0.5f, -0.5f, 0.f},{0.5f, 0.5f, 0.f}},
@@ -455,10 +479,15 @@ int main() try {
 
         // Render
 
+        sushi::set_framebuffer(framebuffer);
         glClearColor(0,0,0,1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glViewport(0, 0, 320, 240);
 
-        auto proj = glm::ortho(-10.f * aspect_ratio, 10.f * aspect_ratio, -10.f, 10.f, 10.f, -10.f);
+        auto proj = glm::ortho(-7.5f * aspect_ratio, 7.5f * aspect_ratio, -7.5f, 7.5f, 7.5f, -7.5f);
         auto view = glm::mat4(1.f);
 
         auto frustum = sushi::frustum(proj*view);
@@ -570,6 +599,26 @@ int main() try {
               }
             });
         });
+
+        {
+            sushi::set_framebuffer(nullptr);
+            glClearColor(0,0,0,1);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glDisable(GL_DEPTH_TEST);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glViewport(0, 0, 640, 480);
+
+            auto projmat = glm::ortho(-160.f, 160.f, -120.f, 120.f, -1.f, 1.f);
+            auto modelmat = glm::mat4(1.f);
+            sushi::set_program(program);
+            sushi::set_uniform("MVP", projmat * modelmat);
+            sushi::set_uniform("normal_mat", glm::transpose(glm::inverse(modelmat)));
+            sushi::set_uniform("cam_forward", glm::vec3{0,0,-1});
+            sushi::set_uniform("s_texture", 0);
+            sushi::set_texture(0, framebuffer.color_texs[0]);
+            sushi::draw_mesh(framebuffer_mesh);
+        }
 
         renderer.begin();
         root_widget.draw(renderer, {0,0});

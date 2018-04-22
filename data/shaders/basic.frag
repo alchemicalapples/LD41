@@ -9,5 +9,7 @@ uniform vec3 cam_forward;
 void main()
 {
     if (dot(v_normal, cam_forward) > 0.0) discard;
-    gl_FragColor = texture2D(s_texture, v_texcoord);
+    vec4 color = texture2D(s_texture, v_texcoord);
+    if (color.a < 0.5) discard;
+    gl_FragColor = color;
 }
