@@ -391,11 +391,11 @@ int main() try {
         root_widget.add_child(info.panel);
     }
 
-    int selected_tower;
+    int selected_tower = 0;
 
     auto select_tower = [&](int i) {
         if (i < 0 || i >= tower_panels.size()) return;
-        tower_panels[i].panel->set_texture("tower_panel");
+        tower_panels[selected_tower].panel->set_texture("tower_panel");
         selected_tower = i;
         tower_panels[i].panel->set_texture("tower_panel_selected");
     };
@@ -520,6 +520,17 @@ int main() try {
         update_input("up", SDL_SCANCODE_UP);
         update_input("down", SDL_SCANCODE_DOWN);
         update_input("shoot", SDL_SCANCODE_SPACE);
+
+        update_input("number_1", SDL_SCANCODE_1);
+        update_input("number_2", SDL_SCANCODE_2);
+        update_input("number_3", SDL_SCANCODE_3);
+        update_input("number_4", SDL_SCANCODE_4);
+        update_input("number_5", SDL_SCANCODE_5);
+        update_input("number_6", SDL_SCANCODE_6);
+        update_input("number_7", SDL_SCANCODE_7);
+        update_input("number_8", SDL_SCANCODE_8);
+        update_input("number_9", SDL_SCANCODE_9);
+        update_input("number_0", SDL_SCANCODE_0);
 
         // Update
 
