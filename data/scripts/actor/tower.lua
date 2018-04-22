@@ -24,11 +24,16 @@ local tower = entities:get_component(eid, component.tower)
       animation.name = "bullet"
       animation.cycle = "walk"
       local timer = component.death_timer.new()
+      local bullet_tag = component.bullet_tag.new()
+      local bullet_comp = component.bullet.new()
+      bullet_comp.tower = eid
       timer.time = 5
       entities:create_component(bullet, bpos)
       entities:create_component(bullet, bvel)
       entities:create_component(bullet, aabb)
       entities:create_component(bullet, animation)
+      entities:create_component(bullet, bullet_tag)
+      entities:create_component(bullet, bullet_comp)
       entities:create_component(bullet, timer)
   end
 end

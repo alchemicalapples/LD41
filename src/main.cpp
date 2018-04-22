@@ -105,8 +105,11 @@ int main() try {
     scripting::register_type<component::ball>(component_table);
     scripting::register_type<component::animation>(component_table);
     scripting::register_type<component::death_timer>(component_table);
+    scripting::register_type<component::bullet>(component_table);
+    scripting::register_type<component::health>(component_table);
 
     scripting::register_type<component::enemy_tag>(component_table);
+    scripting::register_type<component::bullet_tag>(component_table);
 
     auto input_table = lua.create_named_table("input");
 
