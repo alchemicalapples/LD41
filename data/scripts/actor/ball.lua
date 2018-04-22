@@ -86,4 +86,19 @@ end
 function update(eid, delta)
     local ball = entities:get_component(eid, component.ball)
     ball_states[ball.state](eid, ball, delta)
+    
+    --- test code for path finding ---
+    -- local enemyMove = entities:create_entity()
+    -- local animation = component.animation.new()
+    -- local epos = entities:get_component(eid, component.position)
+    -- epos.x = 10
+    -- epos.y = -5
+    -- local evel = component.velocity.new()
+    -- evel.vx = 5--vx*2
+    -- evel.vy = 5--vy*2
+    -- animation.name = "enemy"
+    -- animation.cycle = "walk"
+    -- entities:create_component(enemyMove, epos)
+    -- entities:create_component(enemyMove, evel)
+    -- entities:create_component(enemyMove, animation)
 end

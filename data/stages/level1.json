@@ -24,8 +24,8 @@
         },
         {
             "position": {
-                "x": 10,
-                "y": -8
+                "x": 9,
+                "y": 0
             },
             "animation": {
                 "name": "enemy",
@@ -46,6 +46,21 @@
             },
             "script": {
                 "name": "actor/tower"
+            },
+            "animation": {
+                "name": "enemy",
+                "cycle": "walk",
+                "frame": 0,
+                "t": 0
+            }
+        },
+        {
+            "position": {
+                "x": 9,
+                "y": 0
+            },
+            "script": {
+                "name": "actor/enemyPath"
             },
             "animation": {
                 "name": "enemy",

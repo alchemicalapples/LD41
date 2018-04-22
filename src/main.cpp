@@ -117,58 +117,6 @@ int main() try {
 
     std::cout << "Creating caches..." << std::endl;
 
-    auto mesh_cache = resource_cache<sushi::static_mesh, std::string>([](const std::string& name){
-            return sushi::load_static_mesh_file("data/models/" + name + ".obj");
-        });
-
-    auto texture_cache = resource_cache<sushi::texture_2d, std::string>([](const std::string& name){
-            return sushi::load_texture_2d("data/textures/" + name + ".png", false, false, true, false);
-        });
-
-    auto animation_cache = resource_cache<nlohmann::json, std::string>([](const std::string& name) {
-        std::ifstream file ("data/animations/" + name + ".json");
-        nlohmann::json json;
-        file >> json;
-        return std::make_shared<nlohmann::json>(json);
-    });
-
-    auto font_cache = resource_cache<msdf_font, std::string>([](const std::string& fontname){
-            return msdf_font("data/fonts/"+fontname+".ttf");
-        });
-
-    auto environment_cache = resource_cache<sol::environment, std::string>{[&](const std::string& name) {
-            auto env = sol::environment(lua, sol::create, lua.globals());
-            lua.safe_script_file("data/scripts/"+name+".lua", env);
-            return env;
-        }};
-
-    auto sfx_cache = resource_cache<SoLoud::Wav, std::string>{[&](const std::string& name) {
-            auto wav = std::make_shared<SoLoud::Wav>();
-            wav->load(("data/sound/sfx/"+name+".wav").c_str());
-            return wav;
-        }};
-
-    auto music_cache = resource_cache<SoLoud::Wav, std::string>{[&](const std::string& name) {
-            auto wav = std::make_shared<SoLoud::Wav>();
-            wav->load(("data/sound/music/"+name+".ogg").c_str());
-            wav->setLooping(1);
-            return wav;
-        }};
-
-    std::cout << "Setting helper functions..." << std::endl;
-
-    auto play_sfx = [&](const std::string& name) {
-        auto wav_ptr = sfx_cache.get(name);
-        soloud.stopAudioSource(*wav_ptr);
-        soloud.play(*wav_ptr);
-    };
-
-    auto play_music = [&](const std::string& name) {
-        auto wav_ptr = music_cache.get(name);
-        soloud.stopAudioSource(*wav_ptr);
-        soloud.play(*wav_ptr);
-    };
-
     auto json_to_lua = [&](const nlohmann::json& json, auto& json_to_lua) -> sol::object {
         using value_t = nlohmann::json::value_t;
         switch (json.type()) {
@@ -205,6 +153,65 @@ int main() try {
         return json_to_lua(json, json_to_lua);
     };
 
+    auto mesh_cache = resource_cache<sushi::static_mesh, std::string>([](const std::string& name){
+        return sushi::load_static_mesh_file("data/models/" + name + ".obj");
+    });
+
+    auto texture_cache = resource_cache<sushi::texture_2d, std::string>([](const std::string& name){
+        return sushi::load_texture_2d("data/textures/" + name + ".png", false, false, true, false);
+    });
+
+    auto animation_cache = resource_cache<nlohmann::json, std::string>([](const std::string& name) {
+        std::ifstream file ("data/animations/" + name + ".json");
+        nlohmann::json json;
+        file >> json;
+        return std::make_shared<nlohmann::json>(json);
+    });
+
+    auto path_logic_cache = resource_cache<sol::table, std::string>([&](const std::string& name) {
+        std::ifstream file ("data/stages/pathlogic/" + name + ".json");
+        nlohmann::json json;
+        file >> json;
+        return json_to_lua_rec(json);
+    });
+
+    auto font_cache = resource_cache<msdf_font, std::string>([](const std::string& fontname){
+        return msdf_font("data/fonts/"+fontname+".ttf");
+    });
+
+    auto environment_cache = resource_cache<sol::environment, std::string>{[&](const std::string& name) {
+            auto env = sol::environment(lua, sol::create, lua.globals());
+            lua.safe_script_file("data/scripts/"+name+".lua", env);
+            return env;
+        }};
+
+    auto sfx_cache = resource_cache<SoLoud::Wav, std::string>{[&](const std::string& name) {
+        auto wav = std::make_shared<SoLoud::Wav>();
+        wav->load(("data/sound/sfx/"+name+".wav").c_str());
+        return wav;
+    }};
+
+    auto music_cache = resource_cache<SoLoud::Wav, std::string>{[&](const std::string& name) {
+        auto wav = std::make_shared<SoLoud::Wav>();
+        wav->load(("data/sound/music/"+name+".ogg").c_str());
+        wav->setLooping(1);
+        return wav;
+    }};
+
+    std::cout << "Setting helper functions..." << std::endl;
+
+    auto play_sfx = [&](const std::string& name) {
+        auto wav_ptr = sfx_cache.get(name);
+        soloud.stopAudioSource(*wav_ptr);
+        soloud.play(*wav_ptr);
+    };
+
+    auto play_music = [&](const std::string& name) {
+        auto wav_ptr = music_cache.get(name);
+        soloud.stopAudioSource(*wav_ptr);
+        soloud.play(*wav_ptr);
+    };
+
     auto load_stage = [&](const std::string& name) {
         std::ifstream file ("data/stages/" + name + ".json");
         nlohmann::json json;
@@ -222,6 +229,7 @@ int main() try {
     lua["play_sfx"] = play_sfx;
     lua["play_music"] = play_music;
     lua["entity_from_json"] = entity_from_json;
+    lua["level1_path_logic"] = *path_logic_cache.get("level1pathlogic");
 
     std::cout << "Initializing SDL..." << std::endl;
 
