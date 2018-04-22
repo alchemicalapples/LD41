@@ -629,7 +629,7 @@ int main() try {
         for (auto& tile : jsonLevel["tileset"]) {
             auto modelmat = glm::mat4(1);
             //modelmat = glm::translate(modelmat, {jsonLevel["tileset"][i]["position"]["x"], jsonLevel["tileset"][i]["position"]["y"], 0});
-            modelmat = glm::translate(modelmat, {tile["position"]["x"], tile["position"]["y"], 0});
+            modelmat = glm::translate(modelmat, {tile["x"], tile["y"], 0});
 
             //std::cout << jsonLevel["tileset"][i] << std::endl;
 
@@ -646,7 +646,7 @@ int main() try {
         entities.visit([&](const component::position& pos, component::animation& anim){
             if (frustum.contains({pos.x, pos.y, 0.f}, std::sqrt(0.5*0.5*2.f))) {
                 auto modelmat = glm::mat4(1); // need
-                modelmat = glm::translate(modelmat, {pos.x, pos.y, 0}); // need
+                modelmat = glm::translate(modelmat, {int(pos.x*16)/16.f, int(pos.y*16)/16.f, 0});
 
                 modelmat = glm::rotate(modelmat, anim.rot, {0, 0, 1});
                 modelmat = glm::translate(modelmat, {anim.offset_x, anim.offset_y, 0});
@@ -660,14 +660,8 @@ int main() try {
                     anim.frame = nextFrame;
                     anim.t = 0;
                 }
-                // test animation 
-                //if (anim.name == "player") {
-                    auto pathToTexture = jsonAnim[anim.cycle]["frame"][anim.frame]["path"];
-                    sushi::set_texture(0, *texture_cache.get(pathToTexture));
-                //}
-                //else {
-                //    sushi::set_texture(0, *texture_cache.get("test"));
-                //}
+                auto pathToTexture = jsonAnim[anim.cycle]["frame"][anim.frame]["path"];
+                sushi::set_texture(0, *texture_cache.get(pathToTexture));
                 sushi::set_program(program);
                 sushi::set_uniform("normal_mat", glm::inverseTranspose(view*modelmat));
                 sushi::set_uniform("MVP", (proj*view*modelmat));
