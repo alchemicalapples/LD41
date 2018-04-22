@@ -310,7 +310,7 @@ int main() try {
     auto version_stamp = std::make_shared<gui::label>();
     version_stamp->set_position({-1,-1});
     version_stamp->set_font("LiberationSans-Regular");
-    version_stamp->set_size(renderer, 12);
+    version_stamp->set_size(renderer, 8);
     version_stamp->set_text(renderer, "ALPHA 0.0.0");
     version_stamp->set_color({1,0,1,1});
     version_stamp->show();
@@ -318,7 +318,7 @@ int main() try {
     auto framerate_stamp = std::make_shared<gui::label>();
     framerate_stamp->set_position({-1,-13});
     framerate_stamp->set_font("LiberationSans-Regular");
-    framerate_stamp->set_size(renderer, 12);
+    framerate_stamp->set_size(renderer, 8);
     framerate_stamp->set_text(renderer, "");
     framerate_stamp->set_color({1,0,1,1});
     framerate_stamp->show();
