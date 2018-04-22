@@ -5,8 +5,9 @@
                 "x": 0,
                 "y": 0
             },
+            "ball": {},
             "script": {
-                "name": "actor/player"
+                "name": "actor/ball"
             },
             "animation": {
                 "name": "player",

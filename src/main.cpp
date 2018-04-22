@@ -37,8 +37,22 @@
 using namespace std::literals;
 
 std::function<void()> loop;
-void main_loop() {
+void main_loop() try {
     loop();
+} catch (std::exception& e) {
+    std::cerr << "Exception: " << e.what() << std::endl;
+    std::terminate();
+}
+
+void sol_panic(sol::optional<std::string> maybe_msg) {
+    std::cerr << "Lua is in a panic state and will now abort() the application." << std::endl;
+    if (maybe_msg) {
+        const std::string& msg = maybe_msg.value();
+        std::cerr << "Error message: " << msg << std::endl;
+    } else {
+        std::cerr << "No error details, sorry." << std::endl;
+    }
+    // When this function exits, Lua will exhibit default behavior and abort()
 }
 
 int main() try {
@@ -48,7 +62,7 @@ int main() try {
 
     std::cout << "Creating Lua state..." << std::endl;
 
-    sol::state lua;
+    sol::state lua(sol::c_call<decltype(&sol_panic), &sol_panic>);
     lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::string);
 
     lua["entities"] = std::ref(entities);
@@ -64,6 +78,7 @@ int main() try {
     scripting::register_type<component::script>(component_table);
     scripting::register_type<component::detector>(component_table);
     scripting::register_type<component::tower>(component_table);
+    scripting::register_type<component::ball>(component_table);
     scripting::register_type<component::animation>(component_table);
 
     auto input_table = lua.create_named_table("input");
@@ -100,7 +115,7 @@ int main() try {
 
     auto environment_cache = resource_cache<sol::environment, std::string>{[&](const std::string& name) {
             auto env = sol::environment(lua, sol::create, lua.globals());
-            lua.script_file("data/scripts/"+name+".lua", env);
+            lua.safe_script_file("data/scripts/"+name+".lua", env);
             return env;
         }};
 
