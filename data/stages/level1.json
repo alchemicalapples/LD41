@@ -24,7 +24,6 @@
             },
             "detector":{
                 "radius": 3
-
             },
             "tower":{
                 "time":1
@@ -40,7 +39,28 @@
             }
         }
     ],
-    "tiles": {
-
-    }
+    "tileset": [
+        {
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "tile": 1,
+            "nextTilePos": {
+                "x": 26,
+                "y": 10
+            }
+        },
+        {
+            "position": {
+                "x": 13,
+                "y": -1
+            },
+            "tile": 4,
+            "nextTilePos": {
+                "x": 26,
+                "y": 10
+            }
+        }
+    ]
 }
