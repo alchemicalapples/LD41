@@ -6,6 +6,10 @@ function ball_states.none(eid, ball, delta)
     ball.marker = entities:create_entity()
 
     local pos = component.position.new(entities:get_component(eid, component.position))
+
+    ball.reset_x = pos.x
+    ball.reset_y = pos.y
+
     pos.y = pos.y + 1
 
     local anim = component.animation.new()
@@ -73,7 +77,11 @@ function ball_states.flying(eid, ball, delta)
         tpos.x = ball.land_x
         tpos.y = ball.land_y
         entities:create_component(tower_eid, tpos)
-        entities:destroy_entity(eid)
+        ball.state = "none"
+        pos.x = ball.reset_x
+        pos.y = ball.reset_y
+        vel.vx = 0
+        vel.vy = 0
     end
 end
 

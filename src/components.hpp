@@ -103,6 +103,8 @@ struct ball {
     float land_x;
     float land_y;
     std::string tower;
+    float reset_x;
+    float reset_y;
 };
 
 REGISTER(ball,
@@ -112,7 +114,9 @@ REGISTER(ball,
          MEMBER(marker),
          MEMBER(land_x),
          MEMBER(land_y),
-         MEMBER(tower))
+         MEMBER(tower),
+         MEMBER(reset_x),
+         MEMBER(reset_y))
 
 struct animation {
     std::string name;
