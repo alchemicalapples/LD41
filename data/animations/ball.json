@@ -1,0 +1,29 @@
+{
+    "height_1": {
+        "frame": [
+            {
+                "path": "ball/ball_1",
+                "t": 60,
+                "nextFrame": 0
+            }
+        ]
+    },
+    "height_2": {
+        "frame": [
+            {
+                "path": "ball/ball_2",
+                "t": 60,
+                "nextFrame": 0
+            }
+        ]
+    },
+    "height_3": {
+        "frame": [
+            {
+                "path": "ball/ball_3",
+                "t": 60,
+                "nextFrame": 0
+            }
+        ]
+    }
+}

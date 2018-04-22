@@ -16,8 +16,8 @@
                 "name": "actor/ball"
             },
             "animation": {
-                "name": "player",
-                "cycle": "walk",
+                "name": "ball",
+                "cycle": "height_3",
                 "frame": 0,
                 "t": 0
             }
