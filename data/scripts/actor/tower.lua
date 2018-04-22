@@ -20,9 +20,15 @@ local tower = entities:get_component(eid, component.tower)
       aabb.bottom = -0.5
       aabb.top = 0.5
       local bullet = entities:create_entity()
+      local animation = component.animation.new()
+      animation.name = "bullet"
+      animation.cycle = "walk"
+      animation.frame = 0
+      animation.t = 0
       entities:create_component(bullet, bpos)
       entities:create_component(bullet, bvel)
       entities:create_component(bullet, aabb)
+      entities:create_component(bullet, animation)
 
       print("")
   end

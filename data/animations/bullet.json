@@ -1,0 +1,28 @@
+{
+    "walk": {
+        "frame":
+            [{
+                "path": "player/Skeleton1",
+                "t": 40,
+                "nextFrame": 1
+            },
+            {
+                "path": "player/SkeletonDeath",
+                "t": 40,
+                "nextFrame": 0
+            }]
+    },
+    "death": {
+        "frame":
+            [{
+                "path": "path/to/0",
+                "t": 17,
+                "nextFrame": 1
+            },
+            {
+                "path": "path/to/1",
+                "t": 17,
+                "nextFrame": 0
+            }]
+    }
+}

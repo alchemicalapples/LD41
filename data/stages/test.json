@@ -6,6 +6,12 @@
         },
         "script": {
             "name": "actor/player"
+        },
+        "animation": {
+            "name": "player",
+            "cycle": "walk",
+            "frame": 0,
+            "t": 0
         }
     },
 
@@ -23,8 +29,13 @@
       },
       "script": {
           "name": "actor/tower"
-      }
-
+      },
+      "animation": {
+        "name": "enemy",
+        "cycle": "walk",
+        "frame": 0,
+        "t": 0
+    }
     }
 
 ]

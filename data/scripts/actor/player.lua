@@ -27,10 +27,16 @@ function update(eid, delta)
         aabb.left = -0.5
         aabb.right = 0.5
         aabb.bottom = -0.5
-        aabb.top = 0.5
+        aabb.top = 0.
+        local animation = component.animation.new()
+        animation.name = "bullet"
+        animation.cycle = "walk"
+        animation.frame = 0
+        animation.t = 0
         local bullet = entities:create_entity()
         entities:create_component(bullet, bpos)
         entities:create_component(bullet, bvel)
         entities:create_component(bullet, aabb)
+        entities:create_component(bullet, animation)
     end
 end

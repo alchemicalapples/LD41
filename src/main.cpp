@@ -64,6 +64,7 @@ int main() try {
     scripting::register_type<component::script>(component_table);
     scripting::register_type<component::detector>(component_table);
     scripting::register_type<component::tower>(component_table);
+    scripting::register_type<component::animation>(component_table);
 
     auto input_table = lua.create_named_table("input");
 
@@ -85,6 +86,13 @@ int main() try {
     auto texture_cache = resource_cache<sushi::texture_2d, std::string>([](const std::string& name){
             return sushi::load_texture_2d("data/textures/" + name + ".png", true, false, true, false);
         });
+
+    auto animation_cache = resource_cache<nlohmann::json, std::string>([](const std::string& name) {
+        std::ifstream file ("data/animations/" + name + ".json");
+        nlohmann::json json;
+        file >> json;
+        return std::make_shared<nlohmann::json>(json);
+    });
 
     auto font_cache = resource_cache<msdf_font, std::string>([](const std::string& fontname){
             return msdf_font("data/fonts/"+fontname+".ttf");
@@ -419,15 +427,31 @@ int main() try {
 
         auto frustum = sushi::frustum(proj*view);
 
-        entities.visit([&](const component::position& pos){
+        entities.visit([&](const component::position& pos, component::animation& anim){
             if (frustum.contains({pos.x, pos.y, 0.f}, std::sqrt(0.5*0.5*2.f))) {
                 auto modelmat = glm::mat4(1);
                 modelmat = glm::translate(modelmat, {pos.x, pos.y, 0});
 
+                // animation code
+                auto jsonAnim = *animation_cache.get(anim.name);
+                auto tMilliSecond = float(jsonAnim[anim.cycle]["frame"][anim.frame]["t"]) / 1000.f;
+                anim.t += delta / 10;
+                if (anim.t > tMilliSecond) {
+                    int nextFrame = jsonAnim[anim.cycle]["frame"][anim.frame]["nextFrame"];
+                    anim.frame = nextFrame;
+                    anim.t = 0;
+                }
+                // test animation 
+                //if (anim.name == "player") {
+                    auto pathToTexture = jsonAnim[anim.cycle]["frame"][anim.frame]["path"];
+                    sushi::set_texture(0, *texture_cache.get(pathToTexture));
+                //}
+                //else {
+                //    sushi::set_texture(0, *texture_cache.get("test"));
+                //}
                 sushi::set_program(program);
                 sushi::set_uniform("normal_mat", glm::inverseTranspose(view*modelmat));
                 sushi::set_uniform("MVP", (proj*view*modelmat));
-                sushi::set_texture(0, *texture_cache.get("test"));
                 sushi::draw_mesh(sprite_mesh);
             }
         });

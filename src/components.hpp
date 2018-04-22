@@ -77,7 +77,6 @@ struct script {
 REGISTER(script,
          MEMBER(name))
 
-
 struct detector {
   float radius;
   std::vector<ember_database::ent_id> entity_list;
@@ -97,6 +96,20 @@ REGISTER(tower,
          MEMBER(current_target),
 
                   MEMBER(time))
+
+struct animation {
+    std::string name;
+    std::string cycle;
+    int frame = 0;
+    float t = 0;
+};
+
+REGISTER(animation,
+         MEMBER(name),
+         MEMBER(cycle),
+         MEMBER(frame),
+         MEMBER(t))
+
 } //namespace component
 
 #undef MEMBER
