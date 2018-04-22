@@ -3,7 +3,7 @@ local pos = entities:get_component(eid, component.position)
 local tower = entities:get_component(eid, component.tower)
   local detector = entities:get_component(eid, component.detector)
   tower.time = tower.time + delta
-  if #detector.entity_list > 0 and tower.time > 4  then
+  if #detector.entity_list > 0 and tower.time > tower.delay then
       tower.time = 0
       local enemy_pos = entities:get_component(detector.entity_list[1], component.position)
       local bpos = component.position.new()
@@ -23,12 +23,13 @@ local tower = entities:get_component(eid, component.tower)
       local animation = component.animation.new()
       animation.name = "bullet"
       animation.cycle = "walk"
+      local timer = component.death_timer.new()
+      timer.time = 5
       entities:create_component(bullet, bpos)
       entities:create_component(bullet, bvel)
       entities:create_component(bullet, aabb)
       entities:create_component(bullet, animation)
-
-      print("")
+      entities:create_component(bullet, timer)
   end
 end
 function normalize_dimension(x,y)
@@ -37,10 +38,9 @@ local lx = math.sin(angle)
 local ly = math.cos(angle)
 return lx,ly
 end
-function on_enter(eid, other)
 
+function on_enter(eid, other)
 end
 
 function on_leave(eid, other)
-print("unpoop")
 end

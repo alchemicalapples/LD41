@@ -38,7 +38,7 @@ void new_component_usertype(sol::table& lua, const std::string& name, Args&&... 
 template <typename T, typename... Args, std::enable_if_t<is_tag<T>::value, int> = 0>
 void new_component_usertype(sol::table& lua, const std::string& name, Args&&... args) {
     lua.new_usertype<T>(name, std::forward<Args>(args)...,
-        "_create_component", [](ember_database& db, ember_database::ent_id eid, T com) -> ember_database::com_id {
+        "_create_component", [](ember_database& db, ember_database::ent_id eid, T com) {
             db.create_component(eid, std::move(com));
         },
         "_destroy_component", [](ember_database& db, ember_database::ent_id eid) {

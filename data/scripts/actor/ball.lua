@@ -6,11 +6,16 @@ function ball_states.none(eid, ball, delta)
     ball.marker = entities:create_entity()
 
     local pos = component.position.new(entities:get_component(eid, component.position))
-    pos.y = pos.y + 1
+
+    ball.reset_x = pos.x
+    ball.reset_y = pos.y
 
     local anim = component.animation.new()
-    anim.name = "player"
-    anim.cycle = "walk"
+    anim.name = "arrow"
+    anim.cycle = "arrow"
+    anim.offset_x = -0.5
+    anim.offset_y = 0.5
+    anim.rot = -math.pi/4
 
     entities:create_component(ball.marker, pos)
     entities:create_component(ball.marker, anim)
@@ -30,36 +35,33 @@ function ball_states.swing(eid, ball, delta)
         end
     end
 
-    local pos = component.position.new(entities:get_component(eid, component.position))
-    pos.x = pos.x + 3 * math.cos(ball.angle + math.pi/2)
-    pos.y = pos.y + 3 * math.sin(ball.angle + math.pi/2)
-    entities:create_component(ball.marker, pos)
+    local anim = entities:get_component(ball.marker, component.animation)
+    anim.rot = -math.pi/4 + ball.angle
 
     if input.shoot_pressed then
         ball.state = "shoot"
-        local pos = component.position.new(entities:get_component(eid, component.position))
-        entities:create_component(ball.marker, pos)
-        local vel = component.velocity.new()
-        vel.vx = 3 * math.cos(ball.angle + math.pi/2)
-        vel.vy = 3 * math.sin(ball.angle + math.pi/2)
-        entities:create_component(ball.marker, vel)
     end
 end
 
 function ball_states.shoot(eid, ball, delta)
-    if input.shoot_pressed then
-        local mpos = entities:get_component(ball.marker, component.position)
-        ball.land_x = mpos.x
-        ball.land_y = mpos.y
+    local power = get_powermeter()
+    power = power + delta
+
+    set_powermeter(power)
+
+    if input.shoot_pressed or power > 1 then
         local pos = entities:get_component(eid, component.position)
+        ball.land_x = pos.x + power * 16.7 * math.cos(ball.angle + math.pi/2)
+        ball.land_y = pos.y + power * 16.7 * math.sin(ball.angle + math.pi/2)
         local vel = component.velocity.new()
-        local dx = mpos.x - pos.x
-        local dy = mpos.y - pos.y
+        local dx = ball.land_x - pos.x
+        local dy = ball.land_y - pos.y
         local dist = math.sqrt(dx^2 + dy^2)
-        vel.vx = 3 * dx / dist
-        vel.vy = 3 * dy / dist
+        vel.vx = 10 * dx / dist
+        vel.vy = 10 * dy / dist
         entities:create_component(eid, vel)
         ball.state = "flying"
+        set_powermeter(0)
         entities:destroy_entity(ball.marker)
     end
 end
@@ -68,25 +70,16 @@ function ball_states.flying(eid, ball, delta)
     local pos = entities:get_component(eid, component.position)
     local vel = entities:get_component(eid, component.velocity)
     if math.abs(ball.land_x - pos.x) < math.abs(vel.vx * delta) then
-        local tower_eid = entities:create_entity()
+        local tower_eid = entity_from_json(get_selected_tower())
         local tpos = component.position.new()
         tpos.x = ball.land_x
         tpos.y = ball.land_y
-        local ttower = component.tower.new()
-        ttower.time = 1
-        local detector = component.detector.new()
-        detector.radius = 3
-        local tscript = component.script.new()
-        tscript.name = "actor/tower"
-        local tanim = component.animation.new()
-        tanim.name = "enemy"
-        tanim.cycle = "walk"
         entities:create_component(tower_eid, tpos)
-        entities:create_component(tower_eid, ttower)
-        entities:create_component(tower_eid, detector)
-        entities:create_component(tower_eid, tscript)
-        entities:create_component(tower_eid, tanim)
-        entities:destroy_entity(eid)
+        ball.state = "none"
+        pos.x = ball.reset_x
+        pos.y = ball.reset_y
+        vel.vx = 0
+        vel.vy = 0
     end
 end
 

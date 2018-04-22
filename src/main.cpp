@@ -86,6 +86,9 @@ int main() try {
     sol::state lua(sol::c_call<decltype(&sol_panic), &sol_panic>);
     lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::string);
 
+    auto nlohmann_table = lua.create_named_table("component");
+    nlohmann_table.new_usertype<nlohmann::json>("json");
+
     lua["entities"] = std::ref(entities);
 
     auto global_table = sol::table(lua.globals());
@@ -101,6 +104,9 @@ int main() try {
     scripting::register_type<component::tower>(component_table);
     scripting::register_type<component::ball>(component_table);
     scripting::register_type<component::animation>(component_table);
+    scripting::register_type<component::death_timer>(component_table);
+
+    scripting::register_type<component::enemy_tag>(component_table);
 
     auto input_table = lua.create_named_table("input");
 
@@ -207,8 +213,7 @@ int main() try {
         (*loader_ptr)["load_world"](json_to_lua_rec(json["entities"]));
     };
 
-    auto entity_from_json = [&](const std::string& str) {
-        auto json = nlohmann::json::parse(str);
+    auto entity_from_json = [&](const nlohmann::json& json) {
         auto loader_ptr = environment_cache.get("system/loader");
         auto eid = (*loader_ptr)["load_entity"](json_to_lua_rec(json)).get<ember_database::ent_id>();
         return eid;
@@ -216,7 +221,7 @@ int main() try {
 
     lua["play_sfx"] = play_sfx;
     lua["play_music"] = play_music;
-    lua["entitiy_from_json"] = entity_from_json;
+    lua["entity_from_json"] = entity_from_json;
 
     std::cout << "Initializing SDL..." << std::endl;
 
@@ -296,16 +301,16 @@ int main() try {
         );
     }
 
-    auto renderer = sushi_renderer({display_width, display_height}, program, program_msdf, font_cache, texture_cache);
+    auto renderer = sushi_renderer({320, 240}, program, program_msdf, font_cache, texture_cache);
 
-    auto root_widget = gui::screen({display_width, display_height});
+    auto root_widget = gui::screen({320, 240});
 
     root_widget.show();
 
     auto version_stamp = std::make_shared<gui::label>();
     version_stamp->set_position({-1,-1});
     version_stamp->set_font("LiberationSans-Regular");
-    version_stamp->set_size(renderer, 12);
+    version_stamp->set_size(renderer, 8);
     version_stamp->set_text(renderer, "ALPHA 0.0.0");
     version_stamp->set_color({1,0,1,1});
     version_stamp->show();
@@ -313,13 +318,107 @@ int main() try {
     auto framerate_stamp = std::make_shared<gui::label>();
     framerate_stamp->set_position({-1,-13});
     framerate_stamp->set_font("LiberationSans-Regular");
-    framerate_stamp->set_size(renderer, 12);
+    framerate_stamp->set_size(renderer, 8);
     framerate_stamp->set_text(renderer, "");
     framerate_stamp->set_color({1,0,1,1});
     framerate_stamp->show();
 
+    auto powermeter_border_panel = std::make_shared<gui::panel>();
+    powermeter_border_panel->set_position({-1,0});
+    powermeter_border_panel->set_size({16,80});
+    powermeter_border_panel->set_texture("powermeter_border");
+    powermeter_border_panel->show();
+
+    auto powermeter_panel = std::make_shared<gui::panel>();
+    powermeter_panel->set_position({0,0});
+    powermeter_panel->set_size({16,0});
+    powermeter_panel->set_texture("powermeter");
+    powermeter_panel->show();
+
+    powermeter_border_panel->add_child(powermeter_panel);
+
+
+    struct tower_info {
+        std::shared_ptr<gui::panel> panel;
+        nlohmann::json json;
+    };
+
+    auto tower_panels = std::vector<tower_info>{};
+    tower_panels.reserve(9);
+
+    auto add_tower = [&](const std::string& image, const nlohmann::json& json) {
+        auto panel = std::make_shared<gui::panel>();
+        panel->set_position({tower_panels.size()*16, 0});
+        panel->set_size({16,16});
+        panel->set_texture("tower_panel");
+        panel->show();
+
+        auto tower_image = std::make_shared<gui::panel>();
+        tower_image->set_position({0,0});
+        tower_image->set_size({16,16});
+        tower_image->set_texture(image);
+        tower_image->show();
+
+        auto number_label = std::make_shared<gui::label>();
+        number_label->set_position({0,-1});
+        number_label->set_font("LiberationSans-Regular");
+        number_label->set_size(renderer, 4);
+        number_label->set_text(renderer, std::to_string(tower_panels.size()+1));
+        number_label->set_color({0,0,0,1});
+        number_label->show();
+
+        panel->add_child(tower_image);
+        panel->add_child(number_label);
+
+        tower_panels.push_back({panel, json});
+    };
+
+    {
+        std::ifstream file ("data/towers.json");
+        nlohmann::json json;
+        file >> json;
+
+        for (auto& tower : json) {
+            add_tower("towers/"+tower["name"].get<std::string>(), tower["template"]);
+        }
+    }
+
     root_widget.add_child(version_stamp);
     root_widget.add_child(framerate_stamp);
+    root_widget.add_child(powermeter_border_panel);
+
+    for (const auto& info : tower_panels) {
+        root_widget.add_child(info.panel);
+    }
+
+    int selected_tower = 0;
+
+    auto select_tower = [&](int i) {
+        if (i < 0 || i >= tower_panels.size()) return;
+        tower_panels[selected_tower].panel->set_texture("tower_panel");
+        selected_tower = i;
+        tower_panels[i].panel->set_texture("tower_panel_selected");
+    };
+
+    auto get_selected_tower = [&]() {
+        return tower_panels[selected_tower].json;
+    };
+
+    select_tower(0);
+
+    lua["select_tower"] = select_tower;
+    lua["get_selected_tower"] = get_selected_tower;
+
+    auto set_powermeter = [&](float percent) {
+        powermeter_panel->set_size({16, 80*percent});
+    };
+
+    auto get_powermeter = [&]() {
+        return powermeter_panel->get_size().y / 80.f;
+    };
+
+    lua["set_powermeter"] = set_powermeter;
+    lua["get_powermeter"] = get_powermeter;
 
     std::cout << "Loading stage..." << std::endl;
 
@@ -422,6 +521,17 @@ int main() try {
         update_input("down", SDL_SCANCODE_DOWN);
         update_input("shoot", SDL_SCANCODE_SPACE);
 
+        update_input("number_1", SDL_SCANCODE_1);
+        update_input("number_2", SDL_SCANCODE_2);
+        update_input("number_3", SDL_SCANCODE_3);
+        update_input("number_4", SDL_SCANCODE_4);
+        update_input("number_5", SDL_SCANCODE_5);
+        update_input("number_6", SDL_SCANCODE_6);
+        update_input("number_7", SDL_SCANCODE_7);
+        update_input("number_8", SDL_SCANCODE_8);
+        update_input("number_9", SDL_SCANCODE_9);
+        update_input("number_0", SDL_SCANCODE_0);
+
         // Update
 
         entities.visit([&](component::position& pos, const component::velocity& vel) {
@@ -477,6 +587,16 @@ int main() try {
             (*environment_cache.get(script.name))["update"](eid, delta);
         });
 
+        entities.visit([&](ember_database::ent_id eid) {
+                if (entities.has_component<component::death_timer>(eid)) {
+                    auto& timer = entities.get_component<component::death_timer>(eid);
+                    timer.time -= delta;
+                    if (timer.time <= 0) {
+                        entities.destroy_entity(eid);
+                    }
+                }
+            });
+
         // Render
 
         sushi::set_framebuffer(framebuffer);
@@ -528,6 +648,9 @@ int main() try {
                 auto modelmat = glm::mat4(1); // need
                 modelmat = glm::translate(modelmat, {int(pos.x*16)/16.f, int(pos.y*16)/16.f, 0});
 
+                modelmat = glm::rotate(modelmat, anim.rot, {0, 0, 1});
+                modelmat = glm::translate(modelmat, {anim.offset_x, anim.offset_y, 0});
+
                 // animation code
                 auto jsonAnim = *animation_cache.get(anim.name);
                 auto tMilliSecond = float(jsonAnim[anim.cycle]["frame"][anim.frame]["t"]) / 1000.f;
@@ -548,7 +671,7 @@ int main() try {
 
         //Billi
         entities.visit([&](ember_database::ent_id tower_eid, component::detector& detector, const component::position& tower_pos){
-            entities.visit([&](ember_database::ent_id enemy_eid, const component::position& enemy_pos){
+                entities.visit([&](ember_database::ent_id enemy_eid, const component::position& enemy_pos, component::enemy_tag){
               if(tower_eid == enemy_eid)
                 return;
               auto iter = std::find(detector.entity_list.begin(),detector.entity_list.end(),enemy_eid);
@@ -572,7 +695,6 @@ int main() try {
               // add entity_id
               if(!found && within_radius){
                 detector.entity_list.push_back(enemy_eid);
-                std::cout<<"Entity_id number " << enemy_eid.get_index()<< " triggered the detector number " << tower_eid.get_index()<<std::endl;
                 on_enter(tower_eid, enemy_eid);
               }
               std::function<void(ember_database::ent_id eid, ember_database::ent_id other)>
@@ -588,11 +710,14 @@ int main() try {
               //remove entity_id
               if(found && !within_radius){
                 detector.entity_list.erase(iter);
-                std::cout<<"Entity_id number " << enemy_eid.get_index()<< " left the detector number " << tower_eid.get_index()<<std::endl;
                 on_leave(tower_eid, enemy_eid);
               }
             });
         });
+
+        renderer.begin();
+        root_widget.draw(renderer, {0,0});
+        renderer.end();
 
         {
             sushi::set_framebuffer(nullptr);
@@ -613,10 +738,6 @@ int main() try {
             sushi::set_texture(0, framebuffer.color_texs[0]);
             sushi::draw_mesh(framebuffer_mesh);
         }
-
-        renderer.begin();
-        root_widget.draw(renderer, {0,0});
-        renderer.end();
 
         SDL_GL_SwapWindow(g_window);
 

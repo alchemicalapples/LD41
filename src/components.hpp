@@ -88,12 +88,14 @@ REGISTER(detector,
 
 struct tower {
     ember_database::ent_id current_target;
-    double time;
+    double time = 0;
+    double delay;
 };
 
 REGISTER(tower,
          MEMBER(current_target),
-         MEMBER(time))
+         MEMBER(time),
+         MEMBER(delay))
 
 struct ball {
     std::string state = "none";
@@ -102,6 +104,8 @@ struct ball {
     ember_database::ent_id marker;
     float land_x;
     float land_y;
+    float reset_x;
+    float reset_y;
 };
 
 REGISTER(ball,
@@ -110,20 +114,38 @@ REGISTER(ball,
          MEMBER(power),
          MEMBER(marker),
          MEMBER(land_x),
-         MEMBER(land_y))
+         MEMBER(land_y),
+         MEMBER(reset_x),
+         MEMBER(reset_y))
 
 struct animation {
     std::string name;
     std::string cycle;
     int frame = 0;
     float t = 0;
+    float offset_x = 0;
+    float offset_y = 0;
+    float rot = 0;
 };
 
 REGISTER(animation,
          MEMBER(name),
          MEMBER(cycle),
          MEMBER(frame),
-         MEMBER(t))
+         MEMBER(t),
+         MEMBER(offset_x),
+         MEMBER(offset_y),
+         MEMBER(rot))
+
+struct death_timer {
+    double time = 0;
+};
+
+REGISTER(death_timer,
+         MEMBER(time))
+
+using enemy_tag = ginseng::tag<struct emeny_tag_t>;
+REGISTER(enemy_tag)
 
 } //namespace component
 

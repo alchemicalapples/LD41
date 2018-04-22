@@ -1,0 +1,38 @@
+[
+    {
+        "name": "shooty",
+        "template": {
+            "tower": {
+                "delay": 1
+            },
+            "detector": {
+                "radius": 3
+            },
+            "script": {
+                "name": "actor/tower"
+            },
+            "animation": {
+                "name": "enemy",
+                "cycle": "walk"
+            }
+        }
+    },
+    {
+        "name": "shooty",
+        "template": {
+            "tower": {
+                "delay": 0.1
+            },
+            "detector": {
+                "radius": 3
+            },
+            "script": {
+                "name": "actor/tower"
+            },
+            "animation": {
+                "name": "enemy",
+                "cycle": "walk"
+            }
+        }
+    }
+]

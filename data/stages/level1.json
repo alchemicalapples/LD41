@@ -1,11 +1,17 @@
 {
     "entities": [
         {
+            "script": {
+                "name": "player"
+            }
+        },
+        {
             "position": {
                 "x": 0,
                 "y": -7
             },
-            "ball": {},
+            "ball": {
+            },
             "script": {
                 "name": "actor/ball"
             },
@@ -16,7 +22,17 @@
                 "t": 0
             }
         },
-
+        {
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "animation": {
+                "name": "enemy",
+                "cycle": "walk"
+            },
+            "enemy_tag": {}
+        },
         {
             "position": {
                 "x": 5,
