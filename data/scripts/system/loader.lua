@@ -2,12 +2,20 @@ function load_entity(data)
     local ent = entities:create_entity()
     for k,v in pairs(data) do
         print("  "..k..":")
-        local com = component[k].new()
-        for k,v in pairs(v) do
-            print("    "..k..": "..v)
-            com[k] = v
+        if component[k] ~= nil then
+            local com = component[k].new()
+            for k,v in pairs(v) do
+                print("    "..k..": "..v)
+                if com[k] ~= nil then
+                    com[k] = v
+                else
+                    print("Unknown field: "..k)
+                end
+            end
+            entities:create_component(ent, com)
+        else
+            print("Uknown component: "..k)
         end
-        entities:create_component(ent, com)
     end
 end
 
