@@ -105,6 +105,8 @@ int main() try {
     scripting::register_type<component::ball>(component_table);
     scripting::register_type<component::animation>(component_table);
 
+    scripting::register_type<component::enemy_tag>(component_table);
+
     auto input_table = lua.create_named_table("input");
 
     std::cout << "Initializing soloud..." << std::endl;
@@ -557,7 +559,7 @@ int main() try {
 
         //Billi
         entities.visit([&](ember_database::ent_id tower_eid, component::detector& detector, const component::position& tower_pos){
-            entities.visit([&](ember_database::ent_id enemy_eid, const component::position& enemy_pos){
+                entities.visit([&](ember_database::ent_id enemy_eid, const component::position& enemy_pos, component::enemy_tag){
               if(tower_eid == enemy_eid)
                 return;
               auto iter = std::find(detector.entity_list.begin(),detector.entity_list.end(),enemy_eid);
@@ -581,7 +583,6 @@ int main() try {
               // add entity_id
               if(!found && within_radius){
                 detector.entity_list.push_back(enemy_eid);
-                std::cout<<"Entity_id number " << enemy_eid.get_index()<< " triggered the detector number " << tower_eid.get_index()<<std::endl;
                 on_enter(tower_eid, enemy_eid);
               }
               std::function<void(ember_database::ent_id eid, ember_database::ent_id other)>
@@ -597,7 +598,6 @@ int main() try {
               //remove entity_id
               if(found && !within_radius){
                 detector.entity_list.erase(iter);
-                std::cout<<"Entity_id number " << enemy_eid.get_index()<< " left the detector number " << tower_eid.get_index()<<std::endl;
                 on_leave(tower_eid, enemy_eid);
               }
             });

@@ -4,12 +4,14 @@ function load_entity(data)
         print("  "..k..":")
         if component[k] ~= nil then
             local com = component[k].new()
-            for k,v in pairs(v) do
-                print("    "..k..": "..v)
-                if com[k] ~= nil then
-                    com[k] = v
-                else
-                    print("Unknown field: "..k)
+            if v ~= nil then
+                for k,v in pairs(v) do
+                    print("    "..k..": "..v)
+                    if com[k] ~= nil then
+                        com[k] = v
+                    else
+                        print("Unknown field: "..k)
+                    end
                 end
             end
             entities:create_component(ent, com)

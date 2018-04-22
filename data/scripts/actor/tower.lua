@@ -37,10 +37,9 @@ local lx = math.sin(angle)
 local ly = math.cos(angle)
 return lx,ly
 end
-function on_enter(eid, other)
 
+function on_enter(eid, other)
 end
 
 function on_leave(eid, other)
-print("unpoop")
 end

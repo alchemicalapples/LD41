@@ -127,6 +127,9 @@ REGISTER(animation,
          MEMBER(frame),
          MEMBER(t))
 
+using enemy_tag = ginseng::tag<struct emeny_tag_t>;
+REGISTER(enemy_tag)
+
 } //namespace component
 
 #undef MEMBER
