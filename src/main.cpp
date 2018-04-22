@@ -430,8 +430,6 @@ int main() try {
             (*environment_cache.get(script.name))["update"](eid, delta);
         });
 
-        // Render Tiles
-
         // Render
 
         glClearColor(0,0,0,1);
@@ -443,6 +441,33 @@ int main() try {
         auto frustum = sushi::frustum(proj*view);
 
         // Render Tiles
+        // tileset mesh array index values:
+        // 0 -> grass
+        // 1 -> up / down straight path
+        // 2 -> up / right turn path
+        // 3 -> left / right straight path
+        // 4 -> left / up turn path
+        // 5 -> left / down turn path
+        // 6 -> down / right turn path
+        std::ifstream file ("data/stages/level1.json");
+        nlohmann::json jsonLevel;
+        file >> jsonLevel;
+
+        //for (int i = 0; i < jsonLevel["tileset"].size(); i++) {
+        for (auto& tile : jsonLevel["tileset"]) {
+            auto modelmat = glm::mat4(1);
+            //modelmat = glm::translate(modelmat, {jsonLevel["tileset"][i]["position"]["x"], jsonLevel["tileset"][i]["position"]["y"], 0});
+            modelmat = glm::translate(modelmat, {tile["position"]["x"], tile["position"]["y"], 0});
+
+            //std::cout << jsonLevel["tileset"][i] << std::endl;
+
+            sushi::set_texture(0, *texture_cache.get("tileset"));
+            sushi::set_program(program);
+            sushi::set_uniform("normal_mat", glm::inverseTranspose(view*modelmat));
+            sushi::set_uniform("MVP", (proj*view*modelmat));
+            //sushi::draw_mesh(tile_meshes[jsonLevel["tileset"][i]["tile"]]);
+            sushi::draw_mesh(tile_meshes[tile["tile"]]);
+        }
         
         // Render Entities
 
