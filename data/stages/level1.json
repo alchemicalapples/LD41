@@ -31,7 +31,19 @@
                 "name": "enemy",
                 "cycle": "walk"
             },
-            "enemy_tag": {}
+            "enemy_tag": {},
+            "script":{
+              "name":"actor/enemy"
+            },
+            "aabb":{
+              "left":-0.5,
+              "bottom":-0.5,
+              "top":0.5,
+              "right":0.5
+            },
+            "health":{
+              "max_health":5
+            }
         },
         {
             "position": {
@@ -70,7 +82,7 @@
             }
         }
     ],
-    "tileset": 
+    "tileset":
     [
         {
             "flipX": false,

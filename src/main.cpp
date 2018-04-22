@@ -105,8 +105,11 @@ int main() try {
     scripting::register_type<component::ball>(component_table);
     scripting::register_type<component::animation>(component_table);
     scripting::register_type<component::death_timer>(component_table);
+    scripting::register_type<component::bullet>(component_table);
+    scripting::register_type<component::health>(component_table);
 
     scripting::register_type<component::enemy_tag>(component_table);
+    scripting::register_type<component::bullet_tag>(component_table);
 
     auto input_table = lua.create_named_table("input");
 
@@ -311,6 +314,16 @@ int main() try {
 
     auto renderer = sushi_renderer({320, 240}, program, program_msdf, font_cache, texture_cache);
 
+    auto main_menu_root_widget = gui::screen({320, 240});
+
+    auto main_menu_bg = std::make_shared<gui::panel>();
+    main_menu_bg->set_position({0,0});
+    main_menu_bg->set_size({320,240});
+    main_menu_bg->set_texture("bg/main_menu");
+    main_menu_bg->show();
+
+    main_menu_root_widget.add_child(main_menu_bg);
+
     auto root_widget = gui::screen({320, 240});
 
     root_widget.show();
@@ -344,7 +357,6 @@ int main() try {
     powermeter_panel->show();
 
     powermeter_border_panel->add_child(powermeter_panel);
-
 
     struct tower_info {
         std::shared_ptr<gui::panel> panel;
@@ -482,7 +494,119 @@ int main() try {
     auto framerate_buffer = std::vector<std::chrono::nanoseconds>();
     framerate_buffer.reserve(10);
 
-    loop = [&]{
+    std::function<void()> main_menu_loop;
+    std::function<void()> gameplay_loop;
+
+    main_menu_loop = [&]{
+        // System
+
+        auto now = clock::now();
+        auto delta_time = now - prev_time;
+        prev_time = now;
+        framerate_buffer.push_back(delta_time);
+
+        if (framerate_buffer.size() >= 10) {
+            auto avg_frame_dur = std::accumulate(begin(framerate_buffer), end(framerate_buffer), 0ns) / framerate_buffer.size();
+            auto framerate = 1.0 / std::chrono::duration<double>(avg_frame_dur).count();
+
+            framerate_stamp->set_text(renderer, std::to_string(std::lround(framerate)) + "fps");
+            framerate_buffer.clear();
+        }
+
+        auto delta = std::chrono::duration<double>(delta_time).count();
+
+        SDL_Event event[2]; // Array is needed to work around stack issue in SDL_PollEvent.
+        while (SDL_PollEvent(&event[0]))
+        {
+            if (handle_gui_input(event[0])) break;
+            if (handle_game_input(event[0])) break;
+        }
+
+        const Uint8 *keys = SDL_GetKeyboardState(NULL);
+
+        auto update_input = [&](const std::string& name, SDL_Scancode key) {
+            if (input_table[name].valid()) {
+                auto prev = bool(input_table[name]);
+                auto curr = bool(keys[key]);
+                input_table[name] = curr;
+                input_table[name+"_pressed"] = curr && !prev;
+                input_table[name+"_released"] = !curr && prev;
+            } else {
+                input_table[name] = bool(keys[key]);
+                input_table[name+"_pressed"] = bool(keys[key]);
+                input_table[name+"_released"] = false;
+            }
+        };
+
+        update_input("left", SDL_SCANCODE_LEFT);
+        update_input("right", SDL_SCANCODE_RIGHT);
+        update_input("up", SDL_SCANCODE_UP);
+        update_input("down", SDL_SCANCODE_DOWN);
+        update_input("shoot", SDL_SCANCODE_SPACE);
+
+        update_input("number_1", SDL_SCANCODE_1);
+        update_input("number_2", SDL_SCANCODE_2);
+        update_input("number_3", SDL_SCANCODE_3);
+        update_input("number_4", SDL_SCANCODE_4);
+        update_input("number_5", SDL_SCANCODE_5);
+        update_input("number_6", SDL_SCANCODE_6);
+        update_input("number_7", SDL_SCANCODE_7);
+        update_input("number_8", SDL_SCANCODE_8);
+        update_input("number_9", SDL_SCANCODE_9);
+        update_input("number_0", SDL_SCANCODE_0);
+
+        // Update
+
+        if (input_table["shoot"]) {
+            loop = gameplay_loop;
+            return;
+        }
+
+        // Render
+
+        sushi::set_framebuffer(framebuffer);
+        glClearColor(0,0,0,1);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glViewport(0, 0, 320, 240);
+
+        auto proj = glm::ortho(-7.5f * aspect_ratio, 7.5f * aspect_ratio, -7.5f, 7.5f, 7.5f, -7.5f);
+        auto view = glm::mat4(1.f);
+
+        auto frustum = sushi::frustum(proj*view);
+
+        renderer.begin();
+        main_menu_root_widget.draw(renderer, {0,0});
+        renderer.end();
+
+        {
+            sushi::set_framebuffer(nullptr);
+            glClearColor(0,0,0,1);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glDisable(GL_DEPTH_TEST);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glViewport(0, 0, 640, 480);
+
+            auto projmat = glm::ortho(-160.f, 160.f, -120.f, 120.f, -1.f, 1.f);
+            auto modelmat = glm::mat4(1.f);
+            sushi::set_program(program);
+            sushi::set_uniform("MVP", projmat * modelmat);
+            sushi::set_uniform("normal_mat", glm::transpose(glm::inverse(modelmat)));
+            sushi::set_uniform("cam_forward", glm::vec3{0,0,-1});
+            sushi::set_uniform("s_texture", 0);
+            sushi::set_texture(0, framebuffer.color_texs[0]);
+            sushi::draw_mesh(framebuffer_mesh);
+        }
+
+        SDL_GL_SwapWindow(g_window);
+
+        lua.collect_garbage();
+    };
+
+    gameplay_loop = [&]{
         // System
 
         auto now = clock::now();
@@ -752,6 +876,7 @@ int main() try {
 
     std::cout << "Success." << std::endl;
 
+    loop = main_menu_loop;
     emscripten_set_main_loop(main_loop, 0, 1);
 
     SDL_GL_DeleteContext(glcontext);
