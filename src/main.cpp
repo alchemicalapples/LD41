@@ -37,8 +37,11 @@
 using namespace std::literals;
 
 std::function<void()> loop;
-void main_loop() {
+void main_loop() try {
     loop();
+} catch (std::exception& e) {
+    std::cerr << "Exception: " << e.what() << std::endl;
+    std::terminate();
 }
 
 void sol_panic(sol::optional<std::string> maybe_msg) {
@@ -46,6 +49,8 @@ void sol_panic(sol::optional<std::string> maybe_msg) {
     if (maybe_msg) {
         const std::string& msg = maybe_msg.value();
         std::cerr << "Error message: " << msg << std::endl;
+    } else {
+        std::cerr << "No error details, sorry." << std::endl;
     }
     // When this function exits, Lua will exhibit default behavior and abort()
 }
@@ -73,6 +78,7 @@ int main() try {
     scripting::register_type<component::script>(component_table);
     scripting::register_type<component::detector>(component_table);
     scripting::register_type<component::tower>(component_table);
+    scripting::register_type<component::ball>(component_table);
 
     auto input_table = lua.create_named_table("input");
 

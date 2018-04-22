@@ -77,26 +77,37 @@ struct script {
 REGISTER(script,
          MEMBER(name))
 
-
 struct detector {
-  float radius;
-  std::vector<ember_database::ent_id> entity_list;
+    float radius;
+    std::vector<ember_database::ent_id> entity_list;
 };
-
 
 REGISTER(detector,
          MEMBER(radius),
          MEMBER(entity_list))
 
-struct tower{
-  ember_database::ent_id current_target;
-  double time;
-
+struct tower {
+    ember_database::ent_id current_target;
+    double time;
 };
+
 REGISTER(tower,
          MEMBER(current_target),
+         MEMBER(time))
 
-                  MEMBER(time))
+struct ball {
+    std::string state = "none";
+    float angle = 0;
+    float power = 0;
+    ember_database::ent_id marker;
+};
+
+REGISTER(ball,
+         MEMBER(state),
+         MEMBER(angle),
+         MEMBER(power),
+         MEMBER(marker))
+
 } //namespace component
 
 #undef MEMBER

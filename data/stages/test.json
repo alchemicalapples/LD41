@@ -2,13 +2,13 @@
     {
         "position": {
             "x": 0,
-            "y": 0
+            "y": -10
         },
+        "ball": {},
         "script": {
-            "name": "actor/player"
+            "name": "actor/ball"
         }
     },
-
     {
       "position": {
           "x": 5,
