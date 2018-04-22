@@ -301,9 +301,9 @@ int main() try {
         );
     }
 
-    auto renderer = sushi_renderer({display_width, display_height}, program, program_msdf, font_cache, texture_cache);
+    auto renderer = sushi_renderer({320, 240}, program, program_msdf, font_cache, texture_cache);
 
-    auto root_widget = gui::screen({display_width, display_height});
+    auto root_widget = gui::screen({320, 240});
 
     root_widget.show();
 
@@ -323,8 +323,34 @@ int main() try {
     framerate_stamp->set_color({1,0,1,1});
     framerate_stamp->show();
 
+    auto powermeter_border_panel = std::make_shared<gui::panel>();
+    powermeter_border_panel->set_position({-1,0});
+    powermeter_border_panel->set_size({16,80});
+    powermeter_border_panel->set_texture("powermeter_border");
+    powermeter_border_panel->show();
+
+    auto powermeter_panel = std::make_shared<gui::panel>();
+    powermeter_panel->set_position({0,0});
+    powermeter_panel->set_size({16,0});
+    powermeter_panel->set_texture("powermeter");
+    powermeter_panel->show();
+
+    powermeter_border_panel->add_child(powermeter_panel);
+
     root_widget.add_child(version_stamp);
     root_widget.add_child(framerate_stamp);
+    root_widget.add_child(powermeter_border_panel);
+
+    auto set_powermeter = [&](float percent) {
+        powermeter_panel->set_size({16, 80*percent});
+    };
+
+    auto get_powermeter = [&]() {
+        return powermeter_panel->get_size().y / 80.f;
+    };
+
+    lua["set_powermeter"] = set_powermeter;
+    lua["get_powermeter"] = get_powermeter;
 
     std::cout << "Loading stage..." << std::endl;
 
@@ -603,6 +629,10 @@ int main() try {
             });
         });
 
+        renderer.begin();
+        root_widget.draw(renderer, {0,0});
+        renderer.end();
+
         {
             sushi::set_framebuffer(nullptr);
             glClearColor(0,0,0,1);
@@ -622,10 +652,6 @@ int main() try {
             sushi::set_texture(0, framebuffer.color_texs[0]);
             sushi::draw_mesh(framebuffer_mesh);
         }
-
-        renderer.begin();
-        root_widget.draw(renderer, {0,0});
-        renderer.end();
 
         SDL_GL_SwapWindow(g_window);
 

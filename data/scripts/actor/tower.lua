@@ -27,8 +27,6 @@ local tower = entities:get_component(eid, component.tower)
       entities:create_component(bullet, bvel)
       entities:create_component(bullet, aabb)
       entities:create_component(bullet, animation)
-
-      print("")
   end
 end
 function normalize_dimension(x,y)

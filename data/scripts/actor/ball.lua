@@ -41,30 +41,29 @@ function ball_states.swing(eid, ball, delta)
 
     if input.shoot_pressed then
         ball.state = "shoot"
-        local pos = component.position.new(entities:get_component(eid, component.position))
-        entities:create_component(ball.marker, pos)
-        local vel = component.velocity.new()
-        vel.vx = 3 * math.cos(ball.angle + math.pi/2)
-        vel.vy = 3 * math.sin(ball.angle + math.pi/2)
-        entities:create_component(ball.marker, vel)
+        entities:destroy_entity(ball.marker)
     end
 end
 
 function ball_states.shoot(eid, ball, delta)
-    if input.shoot_pressed then
-        local mpos = entities:get_component(ball.marker, component.position)
-        ball.land_x = mpos.x
-        ball.land_y = mpos.y
+    local power = get_powermeter()
+    power = power + delta
+
+    set_powermeter(power)
+
+    if input.shoot_pressed or power > 1 then
         local pos = entities:get_component(eid, component.position)
+        ball.land_x = pos.x + power * 16.7 * math.cos(ball.angle + math.pi/2)
+        ball.land_y = pos.y + power * 16.7 * math.sin(ball.angle + math.pi/2)
         local vel = component.velocity.new()
-        local dx = mpos.x - pos.x
-        local dy = mpos.y - pos.y
+        local dx = ball.land_x - pos.x
+        local dy = ball.land_y - pos.y
         local dist = math.sqrt(dx^2 + dy^2)
-        vel.vx = 3 * dx / dist
-        vel.vy = 3 * dy / dist
+        vel.vx = 10 * dx / dist
+        vel.vy = 10 * dy / dist
         entities:create_component(eid, vel)
         ball.state = "flying"
-        entities:destroy_entity(ball.marker)
+        set_powermeter(0)
     end
 end
 
