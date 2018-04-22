@@ -7,8 +7,8 @@
         },
         {
             "position": {
-                "x": 0,
-                "y": -7
+                "x": 10,
+                "y": -14
             },
             "ball": {
             },
@@ -24,8 +24,8 @@
         },
         {
             "position": {
-                "x": 0,
-                "y": 0
+                "x": 10,
+                "y": -8
             },
             "animation": {
                 "name": "enemy",
@@ -35,8 +35,8 @@
         },
         {
             "position": {
-                "x": 5,
-                "y": 0
+                "x": 15,
+                "y": -8
             },
             "detector":{
                 "radius": 3

@@ -288,9 +288,9 @@ int main() try {
         {{{{0,0,0},{1,1,1},{2,2,2}}},{{{2,2,2},{3,3,3},{0,0,0}}}}
     );
 
-    sushi::static_mesh tile_meshes[6];
+    sushi::static_mesh tile_meshes[7];
 
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 7; i++) {
         float vOffSetRight = (i + 1) * (1.f/8);
         float vOffSetLeft = ((i + 1) * (1.f/8)) - 0.125f;
         tile_meshes[i] = sushi::load_static_mesh_data(
@@ -609,6 +609,7 @@ int main() try {
 
         auto proj = glm::ortho(-7.5f * aspect_ratio, 7.5f * aspect_ratio, -7.5f, 7.5f, 7.5f, -7.5f);
         auto view = glm::mat4(1.f);
+        view = glm::translate(view, {-9.5, 7, 0});
 
         auto frustum = sushi::frustum(proj*view);
 
@@ -625,19 +626,16 @@ int main() try {
         nlohmann::json jsonLevel;
         file >> jsonLevel;
 
-        //for (int i = 0; i < jsonLevel["tileset"].size(); i++) {
         for (auto& tile : jsonLevel["tileset"]) {
             auto modelmat = glm::mat4(1);
-            //modelmat = glm::translate(modelmat, {jsonLevel["tileset"][i]["position"]["x"], jsonLevel["tileset"][i]["position"]["y"], 0});
-            modelmat = glm::translate(modelmat, {tile["x"], tile["y"], 0});
-
-            //std::cout << jsonLevel["tileset"][i] << std::endl;
-
+            // int x = int(tile["x"]) - 9;
+            // int y = int(tile["y"]) - 7;
+            // modelmat = glm::translate(modelmat, {x, -y, 0});
+            modelmat = glm::translate(modelmat, {tile["x"], -int(tile["y"]), 0});
             sushi::set_texture(0, *texture_cache.get("tileset"));
             sushi::set_program(program);
             sushi::set_uniform("normal_mat", glm::inverseTranspose(view*modelmat));
             sushi::set_uniform("MVP", (proj*view*modelmat));
-            //sushi::draw_mesh(tile_meshes[jsonLevel["tileset"][i]["tile"]]);
             sushi::draw_mesh(tile_meshes[tile["tile"]]);
         }
 
