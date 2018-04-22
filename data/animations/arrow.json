@@ -1,0 +1,11 @@
+{
+    "arrow": {
+        "frame": [
+            {
+                "path": "arrow",
+                "t": 60,
+                "nextFrame": 0
+            }
+        ]
+    }
+}

@@ -648,6 +648,9 @@ int main() try {
                 auto modelmat = glm::mat4(1); // need
                 modelmat = glm::translate(modelmat, {pos.x, pos.y, 0}); // need
 
+                modelmat = glm::rotate(modelmat, anim.rot, {0, 0, 1});
+                modelmat = glm::translate(modelmat, {anim.offset_x, anim.offset_y, 0});
+
                 // animation code
                 auto jsonAnim = *animation_cache.get(anim.name);
                 auto tMilliSecond = float(jsonAnim[anim.cycle]["frame"][anim.frame]["t"]) / 1000.f;

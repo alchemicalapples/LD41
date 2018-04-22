@@ -10,11 +10,12 @@ function ball_states.none(eid, ball, delta)
     ball.reset_x = pos.x
     ball.reset_y = pos.y
 
-    pos.y = pos.y + 1
-
     local anim = component.animation.new()
-    anim.name = "player"
-    anim.cycle = "walk"
+    anim.name = "arrow"
+    anim.cycle = "arrow"
+    anim.offset_x = -0.5
+    anim.offset_y = 0.5
+    anim.rot = -math.pi/4
 
     entities:create_component(ball.marker, pos)
     entities:create_component(ball.marker, anim)
@@ -34,14 +35,11 @@ function ball_states.swing(eid, ball, delta)
         end
     end
 
-    local pos = component.position.new(entities:get_component(eid, component.position))
-    pos.x = pos.x + 3 * math.cos(ball.angle + math.pi/2)
-    pos.y = pos.y + 3 * math.sin(ball.angle + math.pi/2)
-    entities:create_component(ball.marker, pos)
+    local anim = entities:get_component(ball.marker, component.animation)
+    anim.rot = -math.pi/4 + ball.angle
 
     if input.shoot_pressed then
         ball.state = "shoot"
-        entities:destroy_entity(ball.marker)
     end
 end
 
@@ -64,6 +62,7 @@ function ball_states.shoot(eid, ball, delta)
         entities:create_component(eid, vel)
         ball.state = "flying"
         set_powermeter(0)
+        entities:destroy_entity(ball.marker)
     end
 end
 

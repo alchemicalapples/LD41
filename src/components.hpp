@@ -123,13 +123,19 @@ struct animation {
     std::string cycle;
     int frame = 0;
     float t = 0;
+    float offset_x = 0;
+    float offset_y = 0;
+    float rot = 0;
 };
 
 REGISTER(animation,
          MEMBER(name),
          MEMBER(cycle),
          MEMBER(frame),
-         MEMBER(t))
+         MEMBER(t),
+         MEMBER(offset_x),
+         MEMBER(offset_y),
+         MEMBER(rot))
 
 struct death_timer {
     double time = 0;
