@@ -337,9 +337,77 @@ int main() try {
 
     powermeter_border_panel->add_child(powermeter_panel);
 
+
+    struct tower_info {
+        std::shared_ptr<gui::panel> panel;
+        nlohmann::json json;
+    };
+
+    auto tower_panels = std::vector<tower_info>{};
+    tower_panels.reserve(9);
+
+    auto add_tower = [&](const std::string& image, const nlohmann::json& json) {
+        auto panel = std::make_shared<gui::panel>();
+        panel->set_position({tower_panels.size()*16, 0});
+        panel->set_size({16,16});
+        panel->set_texture("tower_panel");
+        panel->show();
+
+        auto tower_image = std::make_shared<gui::panel>();
+        tower_image->set_position({0,0});
+        tower_image->set_size({16,16});
+        tower_image->set_texture(image);
+        tower_image->show();
+
+        auto number_label = std::make_shared<gui::label>();
+        number_label->set_position({0,-1});
+        number_label->set_font("LiberationSans-Regular");
+        number_label->set_size(renderer, 4);
+        number_label->set_text(renderer, std::to_string(tower_panels.size()+1));
+        number_label->set_color({0,0,0,1});
+        number_label->show();
+
+        panel->add_child(tower_image);
+        panel->add_child(number_label);
+
+        tower_panels.push_back({panel, json});
+    };
+
+    {
+        std::ifstream file ("data/towers.json");
+        nlohmann::json json;
+        file >> json;
+
+        for (auto& tower : json) {
+            add_tower("towers/"+tower["name"].get<std::string>(), tower["template"]);
+        }
+    }
+
     root_widget.add_child(version_stamp);
     root_widget.add_child(framerate_stamp);
     root_widget.add_child(powermeter_border_panel);
+
+    for (const auto& info : tower_panels) {
+        root_widget.add_child(info.panel);
+    }
+
+    int selected_tower;
+
+    auto select_tower = [&](int i) {
+        if (i < 0 || i >= tower_panels.size()) return;
+        tower_panels[i].panel->set_texture("tower_panel");
+        selected_tower = i;
+        tower_panels[i].panel->set_texture("tower_panel_selected");
+    };
+
+    auto get_selected_tower = [&]() {
+        return tower_panels[selected_tower].json;
+    };
+
+    select_tower(0);
+
+    lua["select_tower"] = select_tower;
+    lua["get_selected_tower"] = get_selected_tower;
 
     auto set_powermeter = [&](float percent) {
         powermeter_panel->set_size({16, 80*percent});

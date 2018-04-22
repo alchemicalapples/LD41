@@ -1,0 +1,20 @@
+[
+    {
+        "name": "shooty",
+        "template": {
+            "tower": {
+                "time": 1
+            },
+            "detector": {
+                "radius": 3
+            },
+            "script": {
+                "name": "actor/tower"
+            },
+            "animation": {
+                "name": "enemy",
+                "cycle": "walk"
+            }
+        }
+    }
+]
