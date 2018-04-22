@@ -25,8 +25,6 @@ function on_collide(eid, other, manifold)
         local animation = component.animation.new()
         animation.name = "target"
         animation.cycle = "walk"
-        animation.frame = 0
-        animation.t = 0
         entities:create_component(ent, pos)
         entities:create_component(ent, vel)
         entities:create_component(ent, animation)

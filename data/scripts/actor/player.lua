@@ -31,8 +31,6 @@ function update(eid, delta)
         local animation = component.animation.new()
         animation.name = "bullet"
         animation.cycle = "walk"
-        animation.frame = 0
-        animation.t = 0
         local bullet = entities:create_entity()
         entities:create_component(bullet, bpos)
         entities:create_component(bullet, bvel)

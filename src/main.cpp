@@ -224,7 +224,7 @@ int main() try {
     std::cout << "Loading stage..." << std::endl;
 
     {
-        std::ifstream file ("data/stages/test.json");
+        std::ifstream file ("data/stages/level1.json");
         nlohmann::json json;
         file >> json;
 
@@ -262,7 +262,7 @@ int main() try {
 
         auto loader_ptr = environment_cache.get("system/loader");
 
-        (*loader_ptr)["load_world"](json_to_lua(json, json_to_lua));
+        (*loader_ptr)["load_world"](json_to_lua(json["entities"], json_to_lua));
     }
 
     auto handle_game_input = [&](const SDL_Event& event){
@@ -417,7 +417,9 @@ int main() try {
             (*environment_cache.get(script.name))["update"](eid, delta);
         });
 
-        // Render
+        // Render Tiles
+
+        // Render Entities
 
         glClearColor(0,0,0,1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -441,14 +443,9 @@ int main() try {
                     anim.frame = nextFrame;
                     anim.t = 0;
                 }
-                // test animation 
-                //if (anim.name == "player") {
-                    auto pathToTexture = jsonAnim[anim.cycle]["frame"][anim.frame]["path"];
-                    sushi::set_texture(0, *texture_cache.get(pathToTexture));
-                //}
-                //else {
-                //    sushi::set_texture(0, *texture_cache.get("test"));
-                //}
+                auto pathToTexture = jsonAnim[anim.cycle]["frame"][anim.frame]["path"];
+                sushi::set_texture(0, *texture_cache.get(pathToTexture));
+
                 sushi::set_program(program);
                 sushi::set_uniform("normal_mat", glm::inverseTranspose(view*modelmat));
                 sushi::set_uniform("MVP", (proj*view*modelmat));
