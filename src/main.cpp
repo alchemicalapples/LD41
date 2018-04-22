@@ -483,7 +483,10 @@ int main() try {
     auto framerate_buffer = std::vector<std::chrono::nanoseconds>();
     framerate_buffer.reserve(10);
 
-    auto main_menu_loop = [&]{
+    std::function<void()> main_menu_loop;
+    std::function<void()> gameplay_loop;
+
+    main_menu_loop = [&]{
         // System
 
         auto now = clock::now();
@@ -543,6 +546,10 @@ int main() try {
 
         // Update
 
+        if (input_table["shoot"]) {
+            loop = gameplay_loop;
+            return;
+        }
 
         // Render
 
@@ -588,7 +595,7 @@ int main() try {
         lua.collect_garbage();
     };
 
-    auto gameplay_loop = [&]{
+    gameplay_loop = [&]{
         // System
 
         auto now = clock::now();
