@@ -131,6 +131,13 @@ REGISTER(animation,
          MEMBER(frame),
          MEMBER(t))
 
+struct death_timer {
+    double time = 0;
+};
+
+REGISTER(death_timer,
+         MEMBER(time))
+
 using enemy_tag = ginseng::tag<struct emeny_tag_t>;
 REGISTER(enemy_tag)
 

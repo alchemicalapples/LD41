@@ -104,6 +104,7 @@ int main() try {
     scripting::register_type<component::tower>(component_table);
     scripting::register_type<component::ball>(component_table);
     scripting::register_type<component::animation>(component_table);
+    scripting::register_type<component::death_timer>(component_table);
 
     scripting::register_type<component::enemy_tag>(component_table);
 
@@ -585,6 +586,16 @@ int main() try {
         entities.visit([&](ember_database::ent_id eid, const component::script& script) {
             (*environment_cache.get(script.name))["update"](eid, delta);
         });
+
+        entities.visit([&](ember_database::ent_id eid) {
+                if (entities.has_component<component::death_timer>(eid)) {
+                    auto& timer = entities.get_component<component::death_timer>(eid);
+                    timer.time -= delta;
+                    if (timer.time <= 0) {
+                        entities.destroy_entity(eid);
+                    }
+                }
+            });
 
         // Render
 

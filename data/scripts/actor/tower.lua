@@ -23,10 +23,13 @@ local tower = entities:get_component(eid, component.tower)
       local animation = component.animation.new()
       animation.name = "bullet"
       animation.cycle = "walk"
+      local timer = component.death_timer.new()
+      timer.time = 5
       entities:create_component(bullet, bpos)
       entities:create_component(bullet, bvel)
       entities:create_component(bullet, aabb)
       entities:create_component(bullet, animation)
+      entities:create_component(bullet, timer)
   end
 end
 function normalize_dimension(x,y)
