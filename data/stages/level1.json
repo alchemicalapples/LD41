@@ -5,8 +5,8 @@
                 "name": "player"
             },
             "position": {
-                "x": 9,
-                "y": -4
+                "x": 10,
+                "y": -14
             },
             "aabb": {
                 "left": -0.5,
@@ -15,7 +15,7 @@
                 "top": 0.5
             },
             "health": {
-                "max_health": 1
+                "max_health": 3
             },
             "animation": {
                 "name": "enemy",

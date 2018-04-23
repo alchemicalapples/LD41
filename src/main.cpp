@@ -369,6 +369,14 @@ int main() try {
     framerate_stamp->set_color({1,0,1,1});
     framerate_stamp->show();
 
+    auto health_label = std::make_shared<gui::label>();
+    health_label->set_position({168,0});
+    health_label->set_font("LiberationSans-Regular");
+    health_label->set_size(renderer, 16);
+    health_label->set_text(renderer, "Health: ");
+    health_label->set_color({0,0,0,1});
+    health_label->show();
+
     auto powermeter_border_panel = std::make_shared<gui::panel>();
     powermeter_border_panel->set_position({-1,0});
     powermeter_border_panel->set_size({16,80});
@@ -430,6 +438,7 @@ int main() try {
 
     root_widget.add_child(version_stamp);
     root_widget.add_child(framerate_stamp);
+    root_widget.add_child(health_label);
     root_widget.add_child(powermeter_border_panel);
 
     for (const auto& info : tower_panels) {
@@ -464,6 +473,12 @@ int main() try {
 
     lua["set_powermeter"] = set_powermeter;
     lua["get_powermeter"] = get_powermeter;
+
+    auto set_health_display = [&](int health) {
+        health_label->set_text(renderer, "Health: " + std::to_string(health));
+    };
+
+    lua["set_health_display"] = set_health_display;
 
     std::cout << "Loading stage..." << std::endl;
 
@@ -750,9 +765,7 @@ int main() try {
                     auto& timer = entities.get_component<component::death_timer>(eid);
                     timer.time -= delta;
                     if (timer.time <= 0) {
-                        std::cout << "deleting" << std::endl;
                         if (entities.has_component<component::script>(eid)) {
-                            std::cout << "asdf" << std::endl;
                             auto& script = entities.get_component<component::script>(eid);
                             auto env_ptr = environment_cache.get(script.name);
                             auto on_death = (*env_ptr)["on_death"];

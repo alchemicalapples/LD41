@@ -40,5 +40,6 @@ function on_collide(eid1, eid2, aabb)
         if other_health.max_health <= 0 then
             entities:create_component(eid2, component.death_timer.new())
         end
+        entities:create_component(eid1, component.death_timer.new())
     end
 end
