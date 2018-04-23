@@ -3,10 +3,12 @@
         "name": "shooty",
         "template": {
             "tower": {
-                "delay": 1
+                "delay": 1,
+                "range": 10,
+                "speed": 3
             },
             "detector": {
-                "radius": 3
+                "radius": 10
             },
             "script": {
                 "name": "actor/tower"
@@ -21,10 +23,13 @@
         "name": "shooty",
         "template": {
             "tower": {
-                "delay": 0.1
+                "delay": 0.25,
+                "range": 3,
+                "speed": 5,
+                "bullet_type": "machinegun"
             },
             "detector": {
-                "radius": 3
+                "radius": 1.5
             },
             "script": {
                 "name": "actor/tower"

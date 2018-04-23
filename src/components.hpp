@@ -89,13 +89,19 @@ REGISTER(detector,
 struct tower {
     ember_database::ent_id current_target;
     double time = 0;
-    double delay;
+    double delay = 1;
+    double range = 1;
+    double speed = 1;
+    std::string bullet_type = "standard";
 };
 
 REGISTER(tower,
          MEMBER(current_target),
          MEMBER(time),
-         MEMBER(delay))
+         MEMBER(delay),
+         MEMBER(range),
+         MEMBER(speed),
+         MEMBER(bullet_type))
 
 struct ball {
     std::string state = "none";

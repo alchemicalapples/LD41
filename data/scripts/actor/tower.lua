@@ -15,8 +15,8 @@ function update(eid, delta)
 
                 local vx,vy = normalize_dimension((enemy_pos.x-pos.x),(enemy_pos.y-pos.y))
                 local bvel = component.velocity.new()
-                bvel.vx = vx*2
-                bvel.vy = vy*2
+                bvel.vx = vx*tower.speed
+                bvel.vy = vy*tower.speed
 
                 -- turret rotation
                 local anim = entities:get_component(eid, component.animation)
@@ -26,15 +26,16 @@ function update(eid, delta)
                     tower.time = 0
 
                     local aabb = component.aabb.new()
-                    aabb.left = -0.5
-                    aabb.right = 0.5
-                    aabb.bottom = -0.5
-                    aabb.top = 0.5
+                    aabb.left = -0.25
+                    aabb.right = 0.25
+                    aabb.bottom = -0.25
+                    aabb.top = 0.25
                     local animation = component.animation.new()
                     animation.name = "bullet"
-                    animation.cycle = "standard"
+                    animation.cycle = tower.bullet_type
+                    animation.rot = anim.rot
                     local timer = component.death_timer.new()
-                    timer.time = 5
+                    timer.time = tower.range / tower.speed
                     local bullet_tag = component.bullet_tag.new()
                     local bullet_comp = component.bullet.new()
                     bullet_comp.tower = eid

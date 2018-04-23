@@ -33,5 +33,4 @@ function update(eid, delta)
         entities:create_component(enemyMove, component.enemy_tag.new())
         spawner.next_spawn = 3
     end
-    print("Ents: "..entities:size())
 end
