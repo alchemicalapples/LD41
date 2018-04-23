@@ -49,6 +49,7 @@
                 "name": "actor/spawner"
             },
             "spawner": {
+              "max_number": 1
             },
             "animation": {
                 "name": "enemy",
