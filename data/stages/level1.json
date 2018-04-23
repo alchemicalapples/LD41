@@ -1,4 +1,5 @@
 {
+    "next_stage": "level2",
     "entities": [
         {
             "script": {

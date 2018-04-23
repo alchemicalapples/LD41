@@ -3,7 +3,7 @@ function update(eid, delta)
     local pathing = entities:get_component(eid, component.pathing)
     local newVel = entities:get_component(eid, component.velocity)
     local speed = entities:get_component(eid, component.speed)
-    local dest = level1_path_logic[pathing.next_tile + 1]
+    local dest = path_logic[pathing.next_tile + 1]
     local dx = dest.x - epos.x
     local dy = dest.y - epos.y
     local dist = math.sqrt(dx*dx + dy*dy)
@@ -13,7 +13,7 @@ function update(eid, delta)
     end
     if dist < 0.0625 then
         pathing.next_tile = pathing.next_tile + 1
-        if pathing.next_tile == #level1_path_logic then
+        if pathing.next_tile == #path_logic then
             entities:create_component(eid, component.death_timer.new())
         end
     end

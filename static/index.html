@@ -5,10 +5,11 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Ember</title>
     <style>
-      .emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
+      body { margin: 0px; padding: 0px; }
+      .emscripten { padding-right: 0; margin-left: 0px; margin-top: 0px; margin-right: auto; display: block; }
       textarea.emscripten { font-family: monospace; width: 80%; }
       div.emscripten { text-align: center; }
-      div.emscripten_border { border: 1px solid black; }
+      div.emscripten_border { border: 0px; }
       /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
       canvas.emscripten { border: 0px none; background-color: black; }
 
@@ -47,28 +48,39 @@
     </style>
   </head>
   <body>
+    <div class="emscripten_border" id="canvasdiv" hidden>
+      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+    </div>
     <hr/>
     <figure style="overflow:visible;" id="spinner"><div class="spinner"></div><center style="margin-top:0.5em"><strong>Ember</strong></center></figure>
     <div class="emscripten" id="status">Downloading...</div>
     <div class="emscripten">
       <progress value="0" max="100" id="progress" hidden=1></progress>
     </div>
-    <div class="emscripten_border">
-      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
-    </div>
     <hr/>
     <div class="emscripten">
-      <input type="checkbox" id="resize">Resize canvas
-      <input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer
-      &nbsp;&nbsp;&nbsp;
-      <input type="button" value="Fullscreen" onclick="Module.requestFullscreen(document.getElementById('pointerLock').checked, document.getElementById('resize').checked)">
+      <input style="display: none;" type="button" value="Fullscreen" onclick="Module.requestFullscreen(document.getElementById('pointerLock').checked, document.getElementById('resize').checked)">
     </div>
-
-    <hr>
     <script type='text/javascript'>
+        window.onclick = function(evt) {
+            window.focus();
+            evt.preventDefault();
+            evt.stopPropagation();
+        };
+
+        window.onkeydown = function(e) {
+            var key = e.keyCode;
+            if(key==32 || key == 37 || key == 38 || key == 39 || key == 40) {
+                e.preventDefault();
+                return false;
+            }
+            return true;
+        };
+
       var statusElement = document.getElementById('status');
       var progressElement = document.getElementById('progress');
       var spinnerElement = document.getElementById('spinner');
+      var canvasdivElement = document.getElementById('canvasdiv');
 
       var Module = {
         preRun: [],
@@ -107,7 +119,10 @@
             progressElement.value = null;
             progressElement.max = null;
             progressElement.hidden = true;
-            if (!text) spinnerElement.hidden = true;
+            if (!text) {
+              spinnerElement.hidden = true;
+              canvasdiv.hidden = false;
+            }
           }
           statusElement.innerHTML = text;
         },
