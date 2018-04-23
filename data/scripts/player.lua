@@ -4,8 +4,10 @@ function update(eid, delta)
             select_tower(i-1)
         end
     end
+    local health = entities:get_component(eid, component.health)
+    set_health_display(health.max_health)
 end
 
 function on_death(eid)
-    print("ded")
+    set_health_display(0)
 end

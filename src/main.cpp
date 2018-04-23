@@ -108,6 +108,8 @@ int main() try {
     scripting::register_type<component::bullet>(component_table);
     scripting::register_type<component::health>(component_table);
     scripting::register_type<component::speed>(component_table);
+    scripting::register_type<component::pathing>(component_table);
+    scripting::register_type<component::spawner>(component_table);
 
     scripting::register_type<component::enemy_tag>(component_table);
     scripting::register_type<component::bullet_tag>(component_table);
@@ -238,12 +240,8 @@ int main() try {
 
     auto get_tile_at = [&](int x, int y)->int {
           auto json = *tile_level_cache.get("level1");
-          std::cout << y << "," << x << "\n";
           for(auto& tile : json["tileset"]){
-            int xx = tile["x"];
-            int yy = tile["y"];
-            std::cout << yy << "," << xx << "\n";
-            if((int)tile["x"] == x && (int)tile["y"] == y)
+            if(tile["x"] == x && tile["y"] == y)
               return tile["tile"];
           }
           return -1;
@@ -351,21 +349,21 @@ int main() try {
 
     root_widget.show();
 
-    auto version_stamp = std::make_shared<gui::label>();
-    version_stamp->set_position({-1,-1});
-    version_stamp->set_font("LiberationSans-Regular");
-    version_stamp->set_size(renderer, 8);
-    version_stamp->set_text(renderer, "ALPHA 0.0.0");
-    version_stamp->set_color({1,0,1,1});
-    version_stamp->show();
-
     auto framerate_stamp = std::make_shared<gui::label>();
-    framerate_stamp->set_position({-1,-13});
+    framerate_stamp->set_position({-1,-1});
     framerate_stamp->set_font("LiberationSans-Regular");
-    framerate_stamp->set_size(renderer, 8);
+    framerate_stamp->set_size(renderer, 12);
     framerate_stamp->set_text(renderer, "");
     framerate_stamp->set_color({1,0,1,1});
     framerate_stamp->show();
+
+    auto health_label = std::make_shared<gui::label>();
+    health_label->set_position({176,0});
+    health_label->set_font("LiberationSans-Regular");
+    health_label->set_size(renderer, 16);
+    health_label->set_text(renderer, "Health:");
+    health_label->set_color({0,0,0,1});
+    health_label->show();
 
     auto powermeter_border_panel = std::make_shared<gui::panel>();
     powermeter_border_panel->set_position({-1,0});
@@ -391,21 +389,21 @@ int main() try {
 
     auto add_tower = [&](const std::string& image, const nlohmann::json& json) {
         auto panel = std::make_shared<gui::panel>();
-        panel->set_position({tower_panels.size()*16, 0});
-        panel->set_size({16,16});
+        panel->set_position({tower_panels.size()*32, 0});
+        panel->set_size({32,32});
         panel->set_texture("tower_panel");
         panel->show();
 
         auto tower_image = std::make_shared<gui::panel>();
         tower_image->set_position({0,0});
-        tower_image->set_size({16,16});
+        tower_image->set_size({32,32});
         tower_image->set_texture(image);
         tower_image->show();
 
         auto number_label = std::make_shared<gui::label>();
         number_label->set_position({0,-1});
         number_label->set_font("LiberationSans-Regular");
-        number_label->set_size(renderer, 4);
+        number_label->set_size(renderer, 8);
         number_label->set_text(renderer, std::to_string(tower_panels.size()+1));
         number_label->set_color({0,0,0,1});
         number_label->show();
@@ -426,8 +424,8 @@ int main() try {
         }
     }
 
-    root_widget.add_child(version_stamp);
     root_widget.add_child(framerate_stamp);
+    root_widget.add_child(health_label);
     root_widget.add_child(powermeter_border_panel);
 
     for (const auto& info : tower_panels) {
@@ -462,6 +460,12 @@ int main() try {
 
     lua["set_powermeter"] = set_powermeter;
     lua["get_powermeter"] = get_powermeter;
+
+    auto set_health_display = [&](int health) {
+        health_label->set_text(renderer, "Health: " + std::to_string(health));
+    };
+
+    lua["set_health_display"] = set_health_display;
 
     std::cout << "Loading stage..." << std::endl;
 
@@ -748,9 +752,7 @@ int main() try {
                     auto& timer = entities.get_component<component::death_timer>(eid);
                     timer.time -= delta;
                     if (timer.time <= 0) {
-                        std::cout << "deleting" << std::endl;
                         if (entities.has_component<component::script>(eid)) {
-                            std::cout << "asdf" << std::endl;
                             auto& script = entities.get_component<component::script>(eid);
                             auto env_ptr = environment_cache.get(script.name);
                             auto on_death = (*env_ptr)["on_death"];
@@ -879,10 +881,6 @@ int main() try {
             });
         });
 
-        renderer.begin();
-        root_widget.draw(renderer, {0,0});
-        renderer.end();
-
         {
             sushi::set_framebuffer(nullptr);
             glClearColor(0,0,0,1);
@@ -901,6 +899,10 @@ int main() try {
             sushi::set_uniform("s_texture", 0);
             sushi::set_texture(0, framebuffer.color_texs[0]);
             sushi::draw_mesh(framebuffer_mesh);
+
+            renderer.begin();
+            root_widget.draw(renderer, {0,0});
+            renderer.end();
         }
 
         SDL_GL_SwapWindow(g_window);
