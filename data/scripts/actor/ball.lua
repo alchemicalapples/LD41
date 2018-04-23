@@ -69,7 +69,10 @@ end
 function ball_states.flying(eid, ball, delta)
     local pos = entities:get_component(eid, component.position)
     local vel = entities:get_component(eid, component.velocity)
-    if math.abs(ball.land_x - pos.x) < math.abs(vel.vx * delta) then
+    local dx = ball.land_x - pos.x
+    local dy = ball.land_y - pos.y
+    local dist = math.sqrt(dx*dx + dy*dy)
+    if dist < 0.0625 then
 
         local tposx = math.floor(ball.land_x+0.5)
         local tposy = math.floor(-ball.land_y+0.5)
