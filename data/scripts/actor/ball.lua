@@ -59,25 +59,30 @@ function ball_states.shoot(eid, ball, delta)
         local dist = math.sqrt(dx^2 + dy^2)
         vel.vx = 10 * dx / dist
         vel.vy = 10 * dy / dist
-        entities:create_component(eid, vel)
         ball.state = "flying"
         set_powermeter(0)
-        entities:destroy_entity(ball.marker)
+        entities:create_component(eid, vel)
+        entities:create_component(ball.marker, component.death_timer.new())
     end
 end
 
 function ball_states.flying(eid, ball, delta)
     local pos = entities:get_component(eid, component.position)
     local vel = entities:get_component(eid, component.velocity)
-    local dx = ball.land_x - pos.x
-    local dy = ball.land_y - pos.y
-    local dist = math.sqrt(dx*dx + dy*dy)
-    if dist < 0.0625 then
+    local dx = math.abs(pos.x - ball.reset_x)
+    local dy = math.abs(pos.y - ball.reset_y)
+    local rdx = math.abs(ball.land_x - ball.reset_x)
+    local rdy = math.abs(ball.land_y - ball.reset_y)
 
+    if rdx <= dx and rdy <= dy then
         local tposx = math.floor(ball.land_x+0.5)
         local tposy = math.floor(-ball.land_y+0.5)
         local location = get_tile_at(tposx,tposy)
-        print("the location is " .. location)
+        ball.state = "none"
+        pos.x = ball.reset_x
+        pos.y = ball.reset_y
+        vel.vx = 0
+        vel.vy = 0
         if location == 7 then
           local tower_eid = entity_from_json(get_selected_tower())
           local tpos = component.position.new()
@@ -85,30 +90,10 @@ function ball_states.flying(eid, ball, delta)
           tpos.y = -tposy
         entities:create_component(tower_eid, tpos)
       end
-        ball.state = "none"
-        pos.x = ball.reset_x
-        pos.y = ball.reset_y
-        vel.vx = 0
-        vel.vy = 0
     end
 end
 
 function update(eid, delta)
     local ball = entities:get_component(eid, component.ball)
     ball_states[ball.state](eid, ball, delta)
-
-    --- test code for path finding ---
-    -- local enemyMove = entities:create_entity()
-    -- local animation = component.animation.new()
-    -- local epos = entities:get_component(eid, component.position)
-    -- epos.x = 10
-    -- epos.y = -5
-    -- local evel = component.velocity.new()
-    -- evel.vx = 5--vx*2
-    -- evel.vy = 5--vy*2
-    -- animation.name = "enemy"
-    -- animation.cycle = "walk"
-    -- entities:create_component(enemyMove, epos)
-    -- entities:create_component(enemyMove, evel)
-    -- entities:create_component(enemyMove, animation)
 end
