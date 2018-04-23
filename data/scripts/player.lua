@@ -5,3 +5,7 @@ function update(eid, delta)
         end
     end
 end
+
+function on_death(eid)
+    print("ded")
+end

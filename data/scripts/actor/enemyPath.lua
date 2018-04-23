@@ -36,6 +36,12 @@ end
 function doOnce(eid)
     if not once then
         enemyMove = entities:create_entity()
+        local aabb = component.aabb.new()
+        aabb.left = -0.5
+        aabb.right = 0.5
+        aabb.bottom = -0.5
+        aabb.top = 0.5
+        entities:create_component(enemyMove, aabb)
         local animation = component.animation.new()
         local epos = entities:get_component(eid, component.position)
         epos.x = 9

@@ -3,6 +3,23 @@
         {
             "script": {
                 "name": "player"
+            },
+            "position": {
+                "x": 9,
+                "y": -4
+            },
+            "aabb": {
+                "left": -0.5,
+                "right": 0.5,
+                "bottom": -0.5,
+                "top": 0.5
+            },
+            "health": {
+                "max_health": 1
+            },
+            "animation": {
+                "name": "enemy",
+                "cycle": "walk"
             }
         },
         {

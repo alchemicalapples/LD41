@@ -741,11 +741,22 @@ int main() try {
             (*environment_cache.get(script.name))["update"](eid, delta);
         });
 
+        // Death timer system
         entities.visit([&](ember_database::ent_id eid) {
                 if (entities.has_component<component::death_timer>(eid)) {
                     auto& timer = entities.get_component<component::death_timer>(eid);
                     timer.time -= delta;
                     if (timer.time <= 0) {
+                        std::cout << "deleting" << std::endl;
+                        if (entities.has_component<component::script>(eid)) {
+                            std::cout << "asdf" << std::endl;
+                            auto& script = entities.get_component<component::script>(eid);
+                            auto env_ptr = environment_cache.get(script.name);
+                            auto on_death = (*env_ptr)["on_death"];
+                            if (on_death.valid()) {
+                                on_death(eid);
+                            }
+                        }
                         entities.destroy_entity(eid);
                     }
                 }
