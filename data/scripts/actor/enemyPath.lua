@@ -4,7 +4,7 @@ function update(eid, delta)
     --- test code for path finding ---
     doOnce(eid)
     local epos2 = entities:get_component(enemyMove, component.position)
-    print(epos2.y)
+    
 end
 
 function doOnce(eid)

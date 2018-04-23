@@ -70,11 +70,18 @@ function ball_states.flying(eid, ball, delta)
     local pos = entities:get_component(eid, component.position)
     local vel = entities:get_component(eid, component.velocity)
     if math.abs(ball.land_x - pos.x) < math.abs(vel.vx * delta) then
-        local tower_eid = entity_from_json(get_selected_tower())
-        local tpos = component.position.new()
-        tpos.x = ball.land_x
-        tpos.y = ball.land_y
+
+        local tposx = math.floor(ball.land_x+0.5)
+        local tposy = math.floor(-ball.land_y+0.5)
+        local location = get_tile_at(tposx,tposy)
+        print("the location is " .. location)
+        if location == 0 then
+          local tower_eid = entity_from_json(get_selected_tower())
+          local tpos = component.position.new()
+          tpos.x = tposx
+          tpos.y = -tposy
         entities:create_component(tower_eid, tpos)
+      end
         ball.state = "none"
         pos.x = ball.reset_x
         pos.y = ball.reset_y
@@ -86,7 +93,7 @@ end
 function update(eid, delta)
     local ball = entities:get_component(eid, component.ball)
     ball_states[ball.state](eid, ball, delta)
-    
+
     --- test code for path finding ---
     -- local enemyMove = entities:create_entity()
     -- local animation = component.animation.new()

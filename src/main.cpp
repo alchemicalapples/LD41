@@ -228,10 +228,32 @@ int main() try {
         auto eid = (*loader_ptr)["load_entity"](json_to_lua_rec(json)).get<ember_database::ent_id>();
         return eid;
     };
+    auto tile_level_cache = resource_cache<nlohmann::json, std::string>{[&](const std::string& name) {
+      std::ifstream file ("data/stages/"+name+".json");
+      nlohmann::json jsonLevel;
+      file >> jsonLevel;
+        return std::make_shared<nlohmann::json>(jsonLevel);
+    }};
+
+    auto get_tile_at = [&](int x, int y)->int {
+          auto json = *tile_level_cache.get("level1");
+          std::cout << y << "," << x << "\n";
+          for(auto& tile : json["tileset"]){
+            int xx = tile["x"];
+            int yy = tile["y"];
+            std::cout << yy << "," << xx << "\n";
+            if((int)tile["x"] == x && (int)tile["y"] == y)
+              return tile["tile"];
+          }
+          return -1;
+    };
+
+
 
     lua["play_sfx"] = play_sfx;
     lua["play_music"] = play_music;
     lua["entity_from_json"] = entity_from_json;
+    lua["get_tile_at"] = get_tile_at;
     lua["level1_path_logic"] = *path_logic_cache.get("level1pathlogic");
 
     std::cout << "Initializing SDL..." << std::endl;
