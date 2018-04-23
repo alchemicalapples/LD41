@@ -41,29 +41,6 @@
         },
         {
             "position": {
-                "x": 9,
-                "y": 0
-            },
-            "animation": {
-                "name": "enemy",
-                "cycle": "walk"
-            },
-            "enemy_tag": {},
-            "script":{
-              "name":"actor/enemy"
-            },
-            "aabb":{
-              "left":-0.5,
-              "bottom":-0.5,
-              "top":0.5,
-              "right":0.5
-            },
-            "health":{
-              "max_health":5
-            }
-        },
-        {
-            "position": {
                 "x": 15,
                 "y": -8
             },
@@ -78,9 +55,7 @@
             },
             "animation": {
                 "name": "enemy",
-                "cycle": "walk",
-                "frame": 0,
-                "t": 0
+                "cycle": "walk"
             }
         },
         {
@@ -89,13 +64,13 @@
                 "y": 0
             },
             "script": {
-                "name": "actor/enemyPath"
+                "name": "actor/spawner"
+            },
+            "spawner": {
             },
             "animation": {
                 "name": "enemy",
-                "cycle": "walk",
-                "frame": 0,
-                "t": 0
+                "cycle": "walk"
             }
         }
     ],

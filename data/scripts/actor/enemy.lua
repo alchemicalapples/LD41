@@ -1,5 +1,22 @@
 function update(eid, delta)
-
+    local epos = entities:get_component(eid, component.position)
+    local pathing = entities:get_component(eid, component.pathing)
+    local newVel = entities:get_component(eid, component.velocity)
+    local speed = entities:get_component(eid, component.speed)
+    local dest = level1_path_logic[pathing.next_tile + 1]
+    local dx = dest.x - epos.x
+    local dy = dest.y - epos.y
+    local dist = math.sqrt(dx*dx + dy*dy)
+    if dist ~= 0 then
+        newVel.vx = dx * speed.speedness / dist
+        newVel.vy = dy * speed.speedness / dist
+    end
+    if dist < 0.0625 then
+        pathing.next_tile = pathing.next_tile + 1
+        if pathing.next_tile == #level1_path_logic then
+            entities:create_component(eid, component.death_timer.new())
+        end
+    end
 end
 
 function on_collide(eid1, eid2, aabb)
@@ -13,7 +30,7 @@ function on_collide(eid1, eid2, aabb)
         health.max_health = health.max_health - 1
         entities:destroy_entity(eid2)
         if health.max_health == 0 then
-            entities:destroy_entity(eid1)
+            entities:create_component(eid1, component.death_timer.new())
         end
 
         detector.entity_list:erase(detector.entity_list:find(eid2))

@@ -165,6 +165,20 @@ struct speed {
 REGISTER(speed,
          MEMBER(speedness))
 
+struct pathing {
+    int next_tile = 0;
+};
+
+REGISTER(pathing,
+         MEMBER(next_tile))
+
+struct spawner {
+    float next_spawn = 0;
+};
+
+REGISTER(spawner,
+         MEMBER(next_spawn))
+
 using enemy_tag = ginseng::tag<struct emeny_tag_t>;
 REGISTER(enemy_tag)
 
