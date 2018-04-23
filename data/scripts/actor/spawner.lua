@@ -20,6 +20,8 @@ function update(eid, delta)
         local script = component.script.new()
         script.name = "actor/enemy"
         local pathing = component.pathing.new()
+        local health = component.health.new()
+        health.max_health = 100
         entities:create_component(enemyMove, epos)
         entities:create_component(enemyMove, evel)
         entities:create_component(enemyMove, aabb)
@@ -27,7 +29,9 @@ function update(eid, delta)
         entities:create_component(enemyMove, animation)
         entities:create_component(enemyMove, script)
         entities:create_component(enemyMove, pathing)
+        entities:create_component(enemyMove, health)
         entities:create_component(enemyMove, component.enemy_tag.new())
         spawner.next_spawn = 3
     end
+    print("Ents: "..entities:size())
 end

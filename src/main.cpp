@@ -746,6 +746,58 @@ int main() try {
             (*environment_cache.get(script.name))["update"](eid, delta);
         });
 
+        //Billi
+        entities.visit([&](ember_database::ent_id tower_eid, component::detector& detector, const component::position& tower_pos){
+                detector.entity_list.erase(
+                    std::remove_if(begin(detector.entity_list), end(detector.entity_list), [&](auto& eid) {
+                            return !entities.exists(eid);
+                        }),
+                    end(detector.entity_list));
+                entities.visit([&](ember_database::ent_id enemy_eid, const component::position& enemy_pos, component::enemy_tag){
+              if(tower_eid == enemy_eid)
+                return;
+              auto iter = std::find(detector.entity_list.begin(),detector.entity_list.end(),enemy_eid);
+              bool found =  iter != detector.entity_list.end();
+              auto sqr = [](auto x) { return x*x; };
+              bool within_radius = detector.radius > sqrt(sqr(tower_pos.x-enemy_pos.x)+sqr(tower_pos.y - enemy_pos.y));
+
+              bool dying = entities.has_component<component::death_timer>(enemy_eid);
+
+
+              std::function<void(ember_database::ent_id eid, ember_database::ent_id other)>
+                  on_enter = [](auto,auto){};
+              if (entities.has_component<component::script>(tower_eid)) {
+                  auto& script = entities.get_component<component::script>(tower_eid);
+                  auto script_ptr = environment_cache.get(script.name);
+                  auto on_enter_proxy = (*script_ptr)["on_enter"];
+                  if (on_enter_proxy.valid()) {
+                      on_enter = on_enter_proxy;
+                  }
+              }
+
+              // add entity_id
+              if(!found && within_radius && !dying){
+                detector.entity_list.push_back(enemy_eid);
+                on_enter(tower_eid, enemy_eid);
+              }
+              std::function<void(ember_database::ent_id eid, ember_database::ent_id other)>
+                  on_leave = [](auto,auto){};
+              if (entities.has_component<component::script>(tower_eid)) {
+                  auto& script = entities.get_component<component::script>(tower_eid);
+                  auto script_ptr = environment_cache.get(script.name);
+                  auto on_leave_proxy = (*script_ptr)["on_leave"];
+                  if (on_leave_proxy.valid()) {
+                      on_leave = on_leave_proxy;
+                  }
+              }
+              //remove entity_id
+              if(found && (!within_radius || dying)){
+                detector.entity_list.erase(iter);
+                on_leave(tower_eid, enemy_eid);
+              }
+            });
+        });
+
         // Death timer system
         entities.visit([&](ember_database::ent_id eid) {
                 if (entities.has_component<component::death_timer>(eid)) {
@@ -833,52 +885,6 @@ int main() try {
                 sushi::set_uniform("MVP", (proj*view*modelmat));
                 sushi::draw_mesh(sprite_mesh);
             }
-        });
-
-        //Billi
-        entities.visit([&](ember_database::ent_id tower_eid, component::detector& detector, const component::position& tower_pos){
-                entities.visit([&](ember_database::ent_id enemy_eid, const component::position& enemy_pos, component::enemy_tag){
-              if(tower_eid == enemy_eid)
-                return;
-              auto iter = std::find(detector.entity_list.begin(),detector.entity_list.end(),enemy_eid);
-              bool found =  iter != detector.entity_list.end();
-              auto sqr = [](auto x) { return x*x; };
-              bool within_radius = detector.radius > sqrt(sqr(tower_pos.x-enemy_pos.x)+sqr(tower_pos.y - enemy_pos.y));
-
-
-
-              std::function<void(ember_database::ent_id eid, ember_database::ent_id other)>
-                  on_enter = [](auto,auto){};
-              if (entities.has_component<component::script>(tower_eid)) {
-                  auto& script = entities.get_component<component::script>(tower_eid);
-                  auto script_ptr = environment_cache.get(script.name);
-                  auto on_enter_proxy = (*script_ptr)["on_enter"];
-                  if (on_enter_proxy.valid()) {
-                      on_enter = on_enter_proxy;
-                  }
-              }
-
-              // add entity_id
-              if(!found && within_radius){
-                detector.entity_list.push_back(enemy_eid);
-                on_enter(tower_eid, enemy_eid);
-              }
-              std::function<void(ember_database::ent_id eid, ember_database::ent_id other)>
-                  on_leave = [](auto,auto){};
-              if (entities.has_component<component::script>(tower_eid)) {
-                  auto& script = entities.get_component<component::script>(tower_eid);
-                  auto script_ptr = environment_cache.get(script.name);
-                  auto on_leave_proxy = (*script_ptr)["on_leave"];
-                  if (on_leave_proxy.valid()) {
-                      on_leave = on_leave_proxy;
-                  }
-              }
-              //remove entity_id
-              if(found && !within_radius){
-                detector.entity_list.erase(iter);
-                on_leave(tower_eid, enemy_eid);
-              }
-            });
         });
 
         {

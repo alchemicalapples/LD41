@@ -52,6 +52,9 @@ namespace scripting {
 
 template <>
 void register_type<ember_database>(sol::table& lua) {
+    lua.new_usertype<ember_database::ent_id>("ent_id",
+        sol::meta_function::to_string, [](const ember_database::ent_id& eid){
+                                                 return std::to_string(eid.get_index()); });
     lua.new_usertype<ember_database>("ember_database",
         "create_entity", sol::overload(
             sol::resolve<ember_database::ent_id()>(&ember_database::create_entity),
@@ -60,6 +63,7 @@ void register_type<ember_database>(sol::table& lua) {
         "get_entity", &ember_database::get_entity,
         "get_or_create_entity", &ember_database::get_or_create_entity,
         "exists", &ember_database::exists,
+        "size", &ember_database::size,
         "create_component", [](ember_database& db, ember_database::ent_id eid, sol::userdata com){
             return com["_create_component"](db, eid, com);
         },
