@@ -49,7 +49,7 @@ function ball_states.shoot(eid, ball, delta)
 
     set_powermeter(power)
 
-    if input.shoot_pressed or power > 1 then
+    if input.shoot_pressed and power > 0 or power > 1 then
         local pos = entities:get_component(eid, component.position)
         ball.land_x = pos.x + power * 16.7 * math.cos(ball.angle + math.pi/2)
         ball.land_y = pos.y + power * 16.7 * math.sin(ball.angle + math.pi/2)
