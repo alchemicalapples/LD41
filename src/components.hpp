@@ -165,9 +165,6 @@ struct speed {
 REGISTER(speed,
          MEMBER(speedness))
 
-REGISTER(health,
-         MEMBER(max_health))
-
 using enemy_tag = ginseng::tag<struct emeny_tag_t>;
 REGISTER(enemy_tag)
 
