@@ -1,0 +1,15 @@
+{
+    "walk": {
+        "frame":
+            [{
+                "path": "enemies/zombie1",
+                "t": 40,
+                "nextFrame": 1
+            },
+            {
+                "path": "enemies/zombie2",
+                "t": 40,
+                "nextFrame": 0
+            }]
+    }
+}

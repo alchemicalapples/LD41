@@ -12,8 +12,8 @@
                 "name": "actor/tower"
             },
             "animation": {
-                "name": "enemy",
-                "cycle": "walk"
+                "name": "towers",
+                "cycle": "standard"
             }
         }
     },
@@ -30,8 +30,8 @@
                 "name": "actor/tower"
             },
             "animation": {
-                "name": "enemy",
-                "cycle": "walk"
+                "name": "towers",
+                "cycle": "machinegun"
             }
         }
     }

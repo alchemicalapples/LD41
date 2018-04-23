@@ -14,6 +14,10 @@ local tower = entities:get_component(eid, component.tower)
       local bvel = component.velocity.new()
       bvel.vx = vx*2
       bvel.vy = vy*2
+      -- turret rotation
+      local anim = entities:get_component(eid, component.animation)
+      anim.rot = math.atan(bvel.vy, bvel.vx)
+
       local aabb = component.aabb.new()
       aabb.left = -0.5
       aabb.right = 0.5
@@ -22,7 +26,7 @@ local tower = entities:get_component(eid, component.tower)
       local bullet = entities:create_entity()
       local animation = component.animation.new()
       animation.name = "bullet"
-      animation.cycle = "walk"
+      animation.cycle = "standard"
       local timer = component.death_timer.new()
       local bullet_tag = component.bullet_tag.new()
       local bullet_comp = component.bullet.new()

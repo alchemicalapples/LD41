@@ -1,0 +1,15 @@
+{
+    "walk": {
+        "frame":
+            [{
+                "path": "enemies/ghost1",
+                "t": 60,
+                "nextFrame": 1
+            },
+            {
+                "path": "enemies/ghost2",
+                "t": 60,
+                "nextFrame": 0
+            }]
+    }
+}

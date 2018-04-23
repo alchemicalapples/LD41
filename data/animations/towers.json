@@ -2,7 +2,7 @@
     "standard": {
         "frame":
             [{
-                "path": "bullets/standardbullet",
+                "path": "towers/standardturret",
                 "t": 40,
                 "nextFrame": 0
             }]
@@ -10,7 +10,7 @@
     "machinegun": {
         "frame":
             [{
-                "path": "bullets/machinegunbullet",
+                "path": "towers/machinegunturret",
                 "t": 40,
                 "nextFrame": 0
             }]
