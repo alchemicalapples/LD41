@@ -1,0 +1,80 @@
+[
+    {
+        "name": "skeleton",
+        "template": {
+            "aabb": {
+                "left": -0.5,
+                "right": 0.5,
+                "bottom": -0.5,
+                "top": 0.5
+            },
+            "script": {
+                "name": "actor/enemy"
+            },
+            "animation": {
+                "name": "skeleton",
+                "cycle": "walk"
+            },
+            "speed": {
+                "speedness": 2
+            },
+            "pathing": {},
+            "health": {
+                "max_health": 10
+            },
+            "enemy_tag": {}
+        }
+    },
+    {
+        "name": "zombie",
+        "template": {
+            "aabb": {
+                "left": -0.5,
+                "right": 0.5,
+                "bottom": -0.5,
+                "top": 0.5
+            },
+            "script": {
+                "name": "actor/enemy"
+            },
+            "animation": {
+                "name": "zombie",
+                "cycle": "walk"
+            },
+            "speed": {
+                "speedness": 2
+            },
+            "pathing": {},
+            "health": {
+                "max_health": 10
+            },
+            "enemy_tag": {}
+        }
+    },
+    {
+        "name": "ghost",
+        "template": {
+            "aabb": {
+                "left": -0.5,
+                "right": 0.5,
+                "bottom": -0.5,
+                "top": 0.5
+            },
+            "script": {
+                "name": "actor/enemy"
+            },
+            "animation": {
+                "name": "ghost",
+                "cycle": "walk"
+            },
+            "speed": {
+                "speedness": 2
+            },
+            "pathing": {},
+            "health": {
+                "max_health": 10
+            },
+            "enemy_tag": {}
+        }
+    }
+]

@@ -33,6 +33,7 @@
 #include <cmath>
 #include <functional>
 #include <memory>
+#include <random>
 
 using namespace std::literals;
 
@@ -466,6 +467,32 @@ int main() try {
     };
 
     lua["set_health_display"] = set_health_display;
+
+    struct enemy_info {
+        nlohmann::json json;
+    };
+
+    std::vector<enemy_info> enemies;
+    enemies.reserve(3);
+
+    {
+        std::ifstream file ("data/enemies.json");
+        nlohmann::json json;
+        file >> json;
+
+        for (auto& enemy : json) {
+            enemies.push_back({enemy["template"]});
+        }
+    }
+
+    auto rng = std::mt19937(std::random_device{}());
+    auto roll_enemy = std::uniform_int_distribution<>(0, enemies.size()-1);
+
+    auto get_random_enemy = [&]() {
+        return enemies[roll_enemy(rng)].json;
+    };
+
+    lua["get_random_enemy"] = get_random_enemy;
 
     std::cout << "Loading stage..." << std::endl;
 
