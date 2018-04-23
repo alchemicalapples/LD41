@@ -27,6 +27,7 @@ function update(eid, delta)
         entities:create_component(enemyMove, animation)
         entities:create_component(enemyMove, script)
         entities:create_component(enemyMove, pathing)
+        entities:create_component(enemyMove, component.enemy_tag.new())
         spawner.next_spawn = 3
     end
 end
