@@ -1,7 +1,21 @@
 function update(eid, delta)
 local pos = entities:get_component(eid, component.position)
 local tower = entities:get_component(eid, component.tower)
-  local detector = entities:get_component(eid, component.detector)
+local detector = entities:get_component(eid, component.detector)
+if #detector.entity_list > 0 then
+  local enemy_pos = entities:get_component(detector.entity_list[1], component.position)
+      local bpos = component.position.new()
+      bpos.x = pos.x
+      bpos.y = pos.y
+
+      local vx,vy = normalize_dimension((enemy_pos.x-pos.x),(enemy_pos.y-pos.y))
+      local bvel = component.velocity.new()
+      bvel.vx = vx*2
+      bvel.vy = vy*2
+      -- turret rotation
+      local anim = entities:get_component(eid, component.animation)
+      anim.rot = math.atan(bvel.vy, bvel.vx)
+end
   tower.time = tower.time + delta
   if #detector.entity_list > 0 and tower.time > tower.delay then
       tower.time = 0
@@ -17,7 +31,6 @@ local tower = entities:get_component(eid, component.tower)
       -- turret rotation
       local anim = entities:get_component(eid, component.animation)
       anim.rot = math.atan(bvel.vy, bvel.vx)
-
       local aabb = component.aabb.new()
       aabb.left = -0.5
       aabb.right = 0.5
