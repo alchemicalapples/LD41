@@ -144,19 +144,27 @@ struct death_timer {
 REGISTER(death_timer,
          MEMBER(time))
 
-         struct bullet {
-            ember_database::ent_id tower;
+struct bullet {
+ember_database::ent_id tower;
+};
+
+REGISTER(bullet,
+MEMBER(tower))
+
+struct health {
+   int max_health;
+};
+
+REGISTER(health,
+         MEMBER(max_health))
+
+         struct speed {
+            float speedness;
          };
 
-         REGISTER(bullet,
-                  MEMBER(tower))
+         REGISTER(speed,
+                  MEMBER(speedness))
 
-                  struct health {
-                     int max_health;
-                  };
-
-                  REGISTER(health,
-                           MEMBER(max_health))
 
 
 using enemy_tag = ginseng::tag<struct emeny_tag_t>;

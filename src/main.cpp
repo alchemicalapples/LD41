@@ -107,6 +107,7 @@ int main() try {
     scripting::register_type<component::death_timer>(component_table);
     scripting::register_type<component::bullet>(component_table);
     scripting::register_type<component::health>(component_table);
+    scripting::register_type<component::speed>(component_table);
 
     scripting::register_type<component::enemy_tag>(component_table);
     scripting::register_type<component::bullet_tag>(component_table);
