@@ -547,11 +547,13 @@ int main() try {
     std::function<void()> main_menu_loop;
     std::function<void()> gameplay_loop;
     std::function<void()> game_over_loop;
+    std::function<void()> win_loop;
 
     auto set_game_state = [&](const std::string& name) {
         if (name == "main_menu") loop = &main_menu_loop;
         else if (name == "gameplay") loop = &gameplay_loop;
         else if (name == "game_over") loop = &game_over_loop;
+        else if (name == "win") loop = &win_loop;
         else std::cerr << "Invalid game state." << std::endl;
     };
 
@@ -781,7 +783,115 @@ int main() try {
         lua.collect_garbage();
     };
 
+    win_loop = [&]{
+        // System
 
+        auto now = clock::now();
+        auto delta_time = now - prev_time;
+        prev_time = now;
+        framerate_buffer.push_back(delta_time);
+
+        if (framerate_buffer.size() >= 10) {
+            auto avg_frame_dur = std::accumulate(begin(framerate_buffer), end(framerate_buffer), 0ns) / framerate_buffer.size();
+            auto framerate = 1.0 / std::chrono::duration<double>(avg_frame_dur).count();
+
+            framerate_stamp->set_text(renderer, std::to_string(std::lround(framerate)) + "fps");
+            framerate_buffer.clear();
+        }
+
+        auto delta = std::chrono::duration<double>(delta_time).count();
+
+        SDL_Event event[2]; // Array is needed to work around stack issue in SDL_PollEvent.
+        while (SDL_PollEvent(&event[0]))
+        {
+            if (handle_gui_input(event[0])) break;
+            if (handle_game_input(event[0])) break;
+        }
+
+        const Uint8 *keys = SDL_GetKeyboardState(NULL);
+
+        auto update_input = [&](const std::string& name, SDL_Scancode key) {
+            if (input_table[name].valid()) {
+                auto prev = bool(input_table[name]);
+                auto curr = bool(keys[key]);
+                input_table[name] = curr;
+                input_table[name+"_pressed"] = curr && !prev;
+                input_table[name+"_released"] = !curr && prev;
+            } else {
+                input_table[name] = bool(keys[key]);
+                input_table[name+"_pressed"] = bool(keys[key]);
+                input_table[name+"_released"] = false;
+            }
+        };
+
+        update_input("left", SDL_SCANCODE_LEFT);
+        update_input("right", SDL_SCANCODE_RIGHT);
+        update_input("up", SDL_SCANCODE_UP);
+        update_input("down", SDL_SCANCODE_DOWN);
+        update_input("shoot", SDL_SCANCODE_SPACE);
+
+        update_input("number_1", SDL_SCANCODE_1);
+        update_input("number_2", SDL_SCANCODE_2);
+        update_input("number_3", SDL_SCANCODE_3);
+        update_input("number_4", SDL_SCANCODE_4);
+        update_input("number_5", SDL_SCANCODE_5);
+        update_input("number_6", SDL_SCANCODE_6);
+        update_input("number_7", SDL_SCANCODE_7);
+        update_input("number_8", SDL_SCANCODE_8);
+        update_input("number_9", SDL_SCANCODE_9);
+        update_input("number_0", SDL_SCANCODE_0);
+
+        // Update
+
+        if (input_table["shoot_pressed"]) {
+            set_game_state("main_menu");
+            return;
+        }
+
+        // Render
+
+        sushi::set_framebuffer(framebuffer);
+        glClearColor(0,0,0,1);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glViewport(0, 0, 320, 240);
+
+        auto proj = glm::ortho(-7.5f * aspect_ratio, 7.5f * aspect_ratio, -7.5f, 7.5f, 7.5f, -7.5f);
+        auto view = glm::mat4(1.f);
+
+        auto frustum = sushi::frustum(proj*view);
+
+        main_menu_bg->set_texture("bg/win");
+        renderer.begin();
+        main_menu_root_widget.draw(renderer, {0,0});
+        renderer.end();
+
+        {
+            sushi::set_framebuffer(nullptr);
+            glClearColor(0,0,0,1);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glDisable(GL_DEPTH_TEST);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glViewport(0, 0, 640, 480);
+
+            auto projmat = glm::ortho(-160.f, 160.f, -120.f, 120.f, -1.f, 1.f);
+            auto modelmat = glm::mat4(1.f);
+            sushi::set_program(program);
+            sushi::set_uniform("MVP", projmat * modelmat);
+            sushi::set_uniform("normal_mat", glm::transpose(glm::inverse(modelmat)));
+            sushi::set_uniform("cam_forward", glm::vec3{0,0,-1});
+            sushi::set_uniform("s_texture", 0);
+            sushi::set_texture(0, framebuffer.color_texs[0]);
+            sushi::draw_mesh(framebuffer_mesh);
+        }
+
+        SDL_GL_SwapWindow(g_window);
+
+        lua.collect_garbage();
+    };
     gameplay_loop = [&]{
         // System
 
@@ -947,6 +1057,18 @@ int main() try {
             });
         });
 
+        bool won = true;
+
+        entities.visit([&](component::enemy_tag enemy){
+          won = false;
+        });
+
+        entities.visit([&](component::spawner& spawner){
+          won = false;
+        });
+
+          if(won)
+            set_game_state("win");
         // Death timer system
         entities.visit([&](ember_database::ent_id eid) {
                 if (entities.has_component<component::death_timer>(eid)) {

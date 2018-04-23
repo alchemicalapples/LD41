@@ -180,10 +180,12 @@ REGISTER(pathing,
 
 struct spawner {
     float next_spawn = 0;
+    int max_number;
 };
 
 REGISTER(spawner,
-         MEMBER(next_spawn))
+         MEMBER(next_spawn),
+         MEMBER(max_number))
 
 using enemy_tag = ginseng::tag<struct emeny_tag_t>;
 REGISTER(enemy_tag)
