@@ -320,9 +320,9 @@ int main() try {
         {{{{0,0,0},{1,1,1},{2,2,2}}},{{{2,2,2},{3,3,3},{0,0,0}}}}
     );
 
-    sushi::static_mesh tile_meshes[7];
+    sushi::static_mesh tile_meshes[8];
 
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < 8; i++) {
         float vOffSetRight = (i + 1) * (1.f/8);
         float vOffSetLeft = ((i + 1) * (1.f/8)) - 0.125f;
         tile_meshes[i] = sushi::load_static_mesh_data(

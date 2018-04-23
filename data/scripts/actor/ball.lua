@@ -75,7 +75,7 @@ function ball_states.flying(eid, ball, delta)
         local tposy = math.floor(-ball.land_y+0.5)
         local location = get_tile_at(tposx,tposy)
         print("the location is " .. location)
-        if location == 0 then
+        if location == 7 then
           local tower_eid = entity_from_json(get_selected_tower())
           local tpos = component.position.new()
           tpos.x = tposx
