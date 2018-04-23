@@ -7,7 +7,7 @@
                 "nextFrame": 1
             },
             {
-                "path": "player/SkeletonDeath",
+                "path": "player/Skeleton2",
                 "t": 40,
                 "nextFrame": 0
             }]
