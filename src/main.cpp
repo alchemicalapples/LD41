@@ -205,6 +205,12 @@ int main() try {
         return wav;
     }};
 
+    auto tile_level_cache = resource_cache<nlohmann::json, std::string>{[&](const std::string& name) {
+            std::ifstream file ("data/stages/"+name+".json");
+            nlohmann::json jsonLevel;
+            file >> jsonLevel;
+            return std::make_shared<nlohmann::json>(jsonLevel);
+        }};
     std::cout << "Setting helper functions..." << std::endl;
 
     auto play_sfx = [&](const std::string& name) {
@@ -219,12 +225,21 @@ int main() try {
         soloud.play(*wav_ptr);
     };
 
+    auto current_level = "level1"s;
+
     auto load_stage = [&](const std::string& name) {
+        current_level = name;
         std::ifstream file ("data/stages/" + name + ".json");
         nlohmann::json json;
         file >> json;
         auto loader_ptr = environment_cache.get("system/loader");
         (*loader_ptr)["load_world"](json_to_lua_rec(json["entities"]));
+        lua["path_logic"] = *path_logic_cache.get(current_level + "pathlogic");
+    };
+
+    auto load_next_stage = [&]() {
+        auto json = *tile_level_cache.get(current_level);
+        load_stage(json["next_stage"]);
     };
 
     auto entity_from_json = [&](const nlohmann::json& json) {
@@ -232,15 +247,9 @@ int main() try {
         auto eid = (*loader_ptr)["load_entity"](json_to_lua_rec(json)).get<ember_database::ent_id>();
         return eid;
     };
-    auto tile_level_cache = resource_cache<nlohmann::json, std::string>{[&](const std::string& name) {
-      std::ifstream file ("data/stages/"+name+".json");
-      nlohmann::json jsonLevel;
-      file >> jsonLevel;
-        return std::make_shared<nlohmann::json>(jsonLevel);
-    }};
 
     auto get_tile_at = [&](int x, int y)->int {
-          auto json = *tile_level_cache.get("level1");
+          auto json = *tile_level_cache.get(current_level);
           for(auto& tile : json["tileset"]){
             if(tile["x"] == x && tile["y"] == y)
               return tile["tile"];
@@ -250,11 +259,13 @@ int main() try {
 
 
 
+    lua["load_stage"] = load_stage;
+    lua["load_next_stage"] = load_next_stage;
     lua["play_sfx"] = play_sfx;
     lua["play_music"] = play_music;
     lua["entity_from_json"] = entity_from_json;
     lua["get_tile_at"] = get_tile_at;
-    lua["level1_path_logic"] = *path_logic_cache.get("level1pathlogic");
+    lua["path_logic"] = *path_logic_cache.get(current_level + "pathlogic");
 
     std::cout << "Initializing SDL..." << std::endl;
 
@@ -991,7 +1002,7 @@ int main() try {
         // 4 -> left / up turn path
         // 5 -> left / down turn path
         // 6 -> down / right turn path
-        const auto& jsonLevel = *tile_level_cache.get("level1");
+        const auto& jsonLevel = *tile_level_cache.get(current_level);
 
         sushi::set_program(program);
         sushi::set_texture(0, *texture_cache.get("tileset"));
