@@ -1,6 +1,6 @@
 [
     {
-        "name": "shooty",
+        "name": "standardturret",
         "template": {
             "tower": {
                 "delay": 1,
@@ -20,7 +20,7 @@
         }
     },
     {
-        "name": "shooty",
+        "name": "machinegunturret",
         "template": {
             "tower": {
                 "delay": 0.25,
