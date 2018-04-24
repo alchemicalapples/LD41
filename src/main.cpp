@@ -549,6 +549,19 @@ int main() try {
     };
     std::vector<collision_manifold> collisions;
 
+    auto get_entities_at = [&](float x, float y, float r) {
+        auto vec = std::vector<ember_database::ent_id>{};
+        vec.reserve(8);
+        entities.visit([&](ember_database::ent_id eid, const component::position& pos) {
+                if (glm::distance(glm::vec2{pos.x,pos.y}, glm::vec2{x,y}) < r) {
+                    vec.push_back(eid);
+                }
+            });
+        return vec;
+    };
+
+    lua["get_entities_at"] = get_entities_at;
+
     using clock = std::chrono::steady_clock;
     auto prev_time = clock::now();
 

@@ -84,12 +84,22 @@ function ball_states.flying(eid, ball, delta)
         vel.vx = 0
         vel.vy = 0
         if location == 7 then
-          local tower_eid = entity_from_json(get_selected_tower())
-          local tpos = component.position.new()
-          tpos.x = tposx
-          tpos.y = -tposy
-        entities:create_component(tower_eid, tpos)
-      end
+            local ents = get_entities_at(tposx, -tposy, 0.5)
+            local build = true
+            for _,e in ipairs(ents) do
+                if entities:has_component(e, component.tower) then
+                    build = false
+                    break
+                end
+            end
+            if build then
+                local tower_eid = entity_from_json(get_selected_tower())
+                local tpos = component.position.new()
+                tpos.x = tposx
+                tpos.y = -tposy
+                entities:create_component(tower_eid, tpos)
+            end
+        end
     end
 end
 
