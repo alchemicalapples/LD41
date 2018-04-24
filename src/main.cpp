@@ -156,6 +156,14 @@ int main() try {
         }
     };
 
+    std::cout << "Loading config..." << std::endl;
+
+    auto config = emberjs::get_config();
+
+    const auto display_width = int(config["display"]["width"]);
+    const auto display_height = int(config["display"]["height"]);
+    const auto aspect_ratio = float(display_width) / float(display_height);
+
     auto json_to_lua_rec = [&](const nlohmann::json& json) {
         return json_to_lua(json, json_to_lua);
     };
@@ -202,6 +210,7 @@ int main() try {
         auto wav = std::make_shared<SoLoud::Wav>();
         wav->load(("data/sound/sfx/"+name+".ogg").c_str());
         wav->setLooping(1);
+        wav->setVolume(config["volume"]);
         return wav;
     }};
 
@@ -300,14 +309,6 @@ int main() try {
         perror(msg);
         exit(0);
     };
-
-    std::cout << "Loading config..." << std::endl;
-
-    auto config = emberjs::get_config();
-
-    const auto display_width = int(config["display"]["width"]);
-    const auto display_height = int(config["display"]["height"]);
-    const auto aspect_ratio = float(display_width) / float(display_height);
 
     std::cout << "Opening window..." << std::endl;
 
