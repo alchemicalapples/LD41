@@ -213,6 +213,21 @@ int main() try {
         }};
     std::cout << "Setting helper functions..." << std::endl;
 
+    std::function<void()> main_menu_loop;
+    std::function<void()> gameplay_loop;
+    std::function<void()> game_over_loop;
+    std::function<void()> win_loop;
+
+    auto set_game_state = [&](const std::string& name) {
+        if (name == "main_menu") loop = &main_menu_loop;
+        else if (name == "gameplay") loop = &gameplay_loop;
+        else if (name == "game_over") loop = &game_over_loop;
+        else if (name == "win") loop = &win_loop;
+        else std::cerr << "Invalid game state." << std::endl;
+    };
+
+    lua["set_game_state"] = set_game_state;
+
     auto play_sfx = [&](const std::string& name) {
         auto wav_ptr = sfx_cache.get(name);
         soloud.stopAudioSource(*wav_ptr);
@@ -228,6 +243,9 @@ int main() try {
     auto current_level = "level1"s;
 
     auto load_stage = [&](const std::string& name) {
+        entities.visit([&](ember_database::ent_id eid) {
+                entities.destroy_entity(eid);
+            });
         current_level = name;
         std::ifstream file ("data/stages/" + name + ".json");
         nlohmann::json json;
@@ -239,7 +257,11 @@ int main() try {
 
     auto load_next_stage = [&]() {
         auto json = *tile_level_cache.get(current_level);
-        load_stage(json["next_stage"]);
+        if (!json["next_stage"].is_null()) {
+            load_stage(json["next_stage"]);
+        } else {
+            set_game_state("win");
+        }
     };
 
     auto entity_from_json = [&](const nlohmann::json& json) {
@@ -567,21 +589,6 @@ int main() try {
 
     auto framerate_buffer = std::vector<std::chrono::nanoseconds>();
     framerate_buffer.reserve(10);
-
-    std::function<void()> main_menu_loop;
-    std::function<void()> gameplay_loop;
-    std::function<void()> game_over_loop;
-    std::function<void()> win_loop;
-
-    auto set_game_state = [&](const std::string& name) {
-        if (name == "main_menu") loop = &main_menu_loop;
-        else if (name == "gameplay") loop = &gameplay_loop;
-        else if (name == "game_over") loop = &game_over_loop;
-        else if (name == "win") loop = &win_loop;
-        else std::cerr << "Invalid game state." << std::endl;
-    };
-
-    lua["set_game_state"] = set_game_state;
 
     main_menu_loop = [&]{
         // System
@@ -1092,7 +1099,7 @@ int main() try {
         });
 
           if(won)
-            set_game_state("win");
+              load_next_stage();
         // Death timer system
         entities.visit([&](ember_database::ent_id eid) {
                 if (entities.has_component<component::death_timer>(eid)) {
