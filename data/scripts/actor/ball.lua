@@ -74,6 +74,9 @@ function ball_states.flying(eid, ball, delta)
     local rdx = math.abs(ball.land_x - ball.reset_x)
     local rdy = math.abs(ball.land_y - ball.reset_y)
 
+    local bposx = pos.x
+    local bposy = pos.y
+
     if rdx <= dx and rdy <= dy then
         local tposx = math.floor(ball.land_x+0.5)
         local tposy = math.floor(-ball.land_y+0.5)
@@ -98,9 +101,25 @@ function ball_states.flying(eid, ball, delta)
                 tpos.x = tposx
                 tpos.y = -tposy
                 entities:create_component(tower_eid, tpos)
+            else
+                spawn_dedball(bposx, bposy)
             end
+        else
+            spawn_dedball(bposx, bposy)
         end
     end
+end
+
+function spawn_dedball(x, y)
+    local dedball = entities:create_entity()
+    local tpos = component.position.new()
+    tpos.x = x
+    tpos.y = y
+    local tanim = component.animation.new()
+    tanim.name = "ball"
+    tanim.cycle = "height_3"
+    entities:create_component(dedball, tpos)
+    entities:create_component(dedball, tanim)
 end
 
 function update(eid, delta)
