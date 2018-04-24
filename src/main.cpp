@@ -224,7 +224,7 @@ int main() try {
         soloud.stopAudioSource(*wav_ptr);
         soloud.play(*wav_ptr);
     };
-    play_music("Holes");
+    play_music("UnholyHoles");
 
     auto current_level = "level1"s;
 
