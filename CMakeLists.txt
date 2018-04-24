@@ -55,7 +55,7 @@ if(EMSCRIPTEN)
     string(CONCAT LD41_CLIENT_LINK_FLAGS
         " -s TOTAL_MEMORY=33554432"
         " -s DISABLE_EXCEPTION_CATCHING=0"
-        " -s ASSERTIONS=1"
+        " -s ASSERTIONS=2"
         " -s FORCE_FILESYSTEM=1"
         " -s USE_SDL=2"
         " -s USE_SDL_IMAGE=2"

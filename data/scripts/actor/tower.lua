@@ -8,7 +8,7 @@ function update(eid, delta)
     if detector.entity_list:size() > 0 then
         for _,target_eid in ipairs(detector.entity_list) do
             if entities:exists(target_eid) and entities:has_component(target_eid, component.enemy_tag) then
-                local enemy_pos = entities:get_component(detector.entity_list[1], component.position)
+                local enemy_pos = entities:get_component(target_eid, component.position)
                 local bpos = component.position.new()
                 bpos.x = pos.x
                 bpos.y = pos.y
@@ -29,7 +29,6 @@ function update(eid, delta)
                     end
                     if tower.speed == 5 then
                       play_sfx("machinegunshoot")
-
                     end
                     local aabb = component.aabb.new()
                     aabb.left = -0.25
