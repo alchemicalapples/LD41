@@ -23,7 +23,7 @@
         "name": "machinegunturret",
         "template": {
             "tower": {
-                "delay": 0.25,
+                "delay": 0.3,
                 "range": 3,
                 "speed": 3,
                 "bullet_type": "machinegun"
