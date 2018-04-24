@@ -24,7 +24,13 @@ function update(eid, delta)
 
                 if tower.time > tower.delay then
                     tower.time = 0
+                    if tower.speed == 3 then
+                      play_sfx("standardshoot")
+                    end
+                    if tower.speed == 5 then
+                      play_sfx("machinegunshoot")
 
+                    end
                     local aabb = component.aabb.new()
                     aabb.left = -0.25
                     aabb.right = 0.25
