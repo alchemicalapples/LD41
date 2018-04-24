@@ -200,7 +200,7 @@ int main() try {
 
     auto music_cache = resource_cache<SoLoud::Wav, std::string>{[&](const std::string& name) {
         auto wav = std::make_shared<SoLoud::Wav>();
-        wav->load(("data/sound/music/"+name+".ogg").c_str());
+        wav->load(("data/sound/sfx/"+name+".ogg").c_str());
         wav->setLooping(1);
         return wav;
     }};
@@ -239,6 +239,7 @@ int main() try {
         soloud.stopAudioSource(*wav_ptr);
         soloud.play(*wav_ptr);
     };
+    play_music("Holes");
 
     auto current_level = "level1"s;
 

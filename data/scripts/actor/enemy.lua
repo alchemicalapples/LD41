@@ -29,7 +29,6 @@ function on_collide(eid1, eid2, aabb)
         local detector = entities:get_component(bullet.tower, component.detector)
 
         health.max_health = health.max_health - 1
-
         if health.max_health == 0 then
             detector.entity_list:erase(detector.entity_list:find(eid1))
             entities:create_component(eid1, component.death_timer.new())
@@ -39,6 +38,7 @@ function on_collide(eid1, eid2, aabb)
     elseif not is_enemy and entities:has_component(eid2, component.health) then
         local other_health = entities:get_component(eid2, component.health)
 
+        play_sfx("playergethit")
         other_health.max_health = other_health.max_health - 1
 
         entities:create_component(eid1, component.death_timer.new())

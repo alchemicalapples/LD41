@@ -96,6 +96,7 @@ function ball_states.flying(eid, ball, delta)
                 end
             end
             if build then
+              play_sfx("playergethit")
                 local tower_eid = entity_from_json(get_selected_tower())
                 local tpos = component.position.new()
                 tpos.x = tposx
@@ -120,6 +121,7 @@ function spawn_dedball(x, y)
     tanim.cycle = "height_3"
     entities:create_component(dedball, tpos)
     entities:create_component(dedball, tanim)
+    play_sfx("ballmiss")
 end
 
 function update(eid, delta)
