@@ -96,7 +96,7 @@ function ball_states.flying(eid, ball, delta)
                 end
             end
             if build then
-              play_sfx("playergethit")
+              play_sfx("towerbuild")
                 local tower_eid = entity_from_json(get_selected_tower())
                 local tpos = component.position.new()
                 tpos.x = tposx

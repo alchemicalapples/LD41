@@ -17,10 +17,6 @@
             },
             "health": {
                 "max_health": 3
-            },
-            "animation": {
-                "name": "enemy",
-                "cycle": "walk"
             }
         },
         {
