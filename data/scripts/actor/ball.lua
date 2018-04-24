@@ -74,6 +74,9 @@ function ball_states.flying(eid, ball, delta)
     local rdx = math.abs(ball.land_x - ball.reset_x)
     local rdy = math.abs(ball.land_y - ball.reset_y)
 
+    local bposx = pos.x
+    local bposy = pos.y
+
     if rdx <= dx and rdy <= dy then
         local tposx = math.floor(ball.land_x+0.5)
         local tposy = math.floor(-ball.land_y+0.5)
@@ -84,13 +87,39 @@ function ball_states.flying(eid, ball, delta)
         vel.vx = 0
         vel.vy = 0
         if location == 7 then
-          local tower_eid = entity_from_json(get_selected_tower())
-          local tpos = component.position.new()
-          tpos.x = tposx
-          tpos.y = -tposy
-        entities:create_component(tower_eid, tpos)
-      end
+            local ents = get_entities_at(tposx, -tposy, 0.5)
+            local build = true
+            for _,e in ipairs(ents) do
+                if entities:has_component(e, component.tower) then
+                    build = false
+                    break
+                end
+            end
+            if build then
+                local tower_eid = entity_from_json(get_selected_tower())
+                local tpos = component.position.new()
+                tpos.x = tposx
+                tpos.y = -tposy
+                entities:create_component(tower_eid, tpos)
+            else
+                spawn_dedball(bposx, bposy)
+            end
+        else
+            spawn_dedball(bposx, bposy)
+        end
     end
+end
+
+function spawn_dedball(x, y)
+    local dedball = entities:create_entity()
+    local tpos = component.position.new()
+    tpos.x = x
+    tpos.y = y
+    local tanim = component.animation.new()
+    tanim.name = "ball"
+    tanim.cycle = "height_3"
+    entities:create_component(dedball, tpos)
+    entities:create_component(dedball, tanim)
 end
 
 function update(eid, delta)
