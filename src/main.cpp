@@ -66,17 +66,6 @@ void main_loop() try {
     std::terminate();
 }
 
-void sol_panic(sol::optional<std::string> maybe_msg) {
-    std::cerr << "Lua is in a panic state and will now abort() the application." << std::endl;
-    if (maybe_msg) {
-        const std::string& msg = maybe_msg.value();
-        std::cerr << "Error message: " << msg << std::endl;
-    } else {
-        std::cerr << "No error details, sorry." << std::endl;
-    }
-    // When this function exits, Lua will exhibit default behavior and abort()
-}
-
 int main() try {
     std::cout << "Init..." << std::endl;
 
@@ -84,7 +73,7 @@ int main() try {
 
     std::cout << "Creating Lua state..." << std::endl;
 
-    sol::state lua(sol::c_call<decltype(&sol_panic), &sol_panic>);
+    sol::state lua;
     lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::string);
 
     auto nlohmann_table = lua.create_named_table("component");
@@ -148,7 +137,9 @@ int main() try {
             case value_t::boolean:
                 return sol::make_object(lua, json.get<bool>());
             case value_t::number_integer:
+                return sol::make_object(lua, json.get<int>());
             case value_t::number_unsigned:
+                return sol::make_object(lua, json.get<unsigned>());
             case value_t::number_float:
                 return sol::make_object(lua, json.get<double>());
             default:

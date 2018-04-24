@@ -75,6 +75,9 @@ if(EMSCRIPTEN)
         LINK_FLAGS_DEBUG "${LD41_CLIENT_LINK_FLAGS_DEBUG}"
         LINK_FLAGS_RELWITHDEBINFO "${LD41_CLIENT_LINK_FLAGS_RELWITHDEBINFO}"
         RUNTIME_OUTPUT_DIRECTORY "${LD41_WWW_DIR}")
+    target_compile_definitions(ld41_client PUBLIC
+        SOL_CHECK_ARGUMENTS
+        SOL_PRINT_ERRORS)
     em_link_js_library(ld41_client ${LD41_CLIENT_JS})
     target_link_libraries(ld41_client
         ginseng
