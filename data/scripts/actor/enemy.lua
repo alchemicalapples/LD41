@@ -30,7 +30,10 @@ function on_collide(eid1, eid2, aabb)
 
         health.max_health = health.max_health - 1
         if health.max_health == 0 then
-            detector.entity_list:erase(detector.entity_list:find(eid1))
+            local idx = detector.entity_list:find(eid1)
+            if idx then
+                detector.entity_list:erase(idx)
+            end
             entities:create_component(eid1, component.death_timer.new())
         end
 
