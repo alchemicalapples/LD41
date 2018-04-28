@@ -32,6 +32,8 @@
 
 namespace component {
 
+void register_components(sol::table& component_table);
+
 struct net_id {
     ember_database::net_id id;
 };
