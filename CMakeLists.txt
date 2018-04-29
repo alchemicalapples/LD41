@@ -95,4 +95,60 @@ if(EMSCRIPTEN)
     add_dependencies(ld41_client ld41_client_static ld41_data)
 
     add_dependencies(ld41 ld41_client)
+else()
+    find_package(sdl2 REQUIRED)
+
+    add_subdirectory(ext/glad)
+
+    set(LD41_DIST_DIR "${CMAKE_BINARY_DIR}/dist" CACHE PATH "Client Output Directory")
+
+    # Client Data
+    set(LD41_CLIENT_DATA_DIR "${CMAKE_SOURCE_DIR}/data" CACHE PATH "Client Data Directory")
+    file(GLOB_RECURSE LD41_CLIENT_DATA_FILES ${LD41_CLIENT_DATA_DIR}/*)
+    add_custom_target(ld41_data
+        COMMENT "Packaging data files"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${LD41_CLIENT_DATA_DIR} ${LD41_DIST_DIR}/data
+        SOURCES ${LD41_CLIENT_DATA_FILES})
+
+    # Emberjs Shim
+    file(GLOB_RECURSE EMBERJS_SHIM_SRCS emberjs_shim_src/*.cpp emberjs_shim_src/*.hpp)
+    add_library(emberjs_shim ${EMBERJS_SHIM_SRCS})
+    set_target_properties(emberjs_shim PROPERTIES CXX_STANDARD 17)
+
+    # Client C++
+    file(GLOB_RECURSE LD41_CLIENT_SRCS src/*.cpp src/*.hpp)
+    add_executable(ld41_client ${LD41_CLIENT_SRCS} ${LD41_CLIENT_JS})
+    set_target_properties(ld41_client PROPERTIES
+        CXX_STANDARD ${LD41_CXX_STANDARD}
+        LINK_FLAGS "-static"
+        RUNTIME_OUTPUT_DIRECTORY "${LD41_DIST_DIR}")
+    target_compile_definitions(ld41_client PUBLIC
+        GLM_ENABLE_EXPERIMENTAL
+        SOL_CHECK_ARGUMENTS
+        SOL_PRINT_ERRORS)
+    target_include_directories(ld41_client PRIVATE
+        ${SDL2_INCLUDE_DIRS})
+    target_link_libraries(ld41_client
+        emberjs_shim
+        ginseng
+        sol2
+        metastuff
+        sushi
+        msdfgen
+        soloud
+        ${SDL2_LIBRARIES}
+        glad
+        png16
+        z)
+    if (WIN32)
+        target_link_libraries(ld41_client
+            ole32
+            oleaut32
+            imm32
+            winmm
+            version)
+    endif()
+    add_dependencies(ld41_client ld41_data)
+
+    add_dependencies(ld41 ld41_client)
 endif()

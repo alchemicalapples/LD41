@@ -23,8 +23,10 @@
 
 
 ////
+#ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #include <emscripten/html5.h>
+#endif
 
 #include <iostream>
 #include <stdexcept>
@@ -66,8 +68,10 @@ void main_loop() try {
     std::terminate();
 }
 
-int main() try {
+int main(int argc, char* argv[]) try {
     std::cout << "Init..." << std::endl;
+
+    bool running = true;
 
     ember_database entities;
 
@@ -286,26 +290,50 @@ int main() try {
 
     auto g_window = SDL_CreateWindow("LD41", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, display_width, display_height, SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
 
+    std::cout << "Setting window attributes..." << std::endl;
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+#ifdef __EMSCRIPTEN__
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+#else
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+#endif
+
+    std::cout << "Creating GL context..." << std::endl;
     auto glcontext = SDL_GL_CreateContext(g_window);
 
-    glDisable(GL_DEPTH_TEST);
+#ifndef __EMSCRIPTEN__
+    if (!gladLoadGLLoader(SDL_GL_GetProcAddress)) {
+        throw std::runtime_error("Failed to load OpenGL extensions.");
+    }
+#endif
 
     std::cout << "Loading shaders..." << std::endl;
 
+#ifdef __EMSCRIPTEN__
     auto program = sushi::link_program({
-        sushi::compile_shader_file(sushi::shader_type::VERTEX, "data/shaders/basic.vert"),
-        sushi::compile_shader_file(sushi::shader_type::FRAGMENT, "data/shaders/basic.frag"),
+        sushi::compile_shader_file(sushi::shader_type::VERTEX, "data/shaders/GLES2/basic.vert"),
+        sushi::compile_shader_file(sushi::shader_type::FRAGMENT, "data/shaders/GLES2/basic.frag"),
     });
 
     auto program_msdf = sushi::link_program({
-        sushi::compile_shader_file(sushi::shader_type::VERTEX, "data/shaders/msdf.vert"),
-        sushi::compile_shader_file(sushi::shader_type::FRAGMENT, "data/shaders/msdf.frag"),
+        sushi::compile_shader_file(sushi::shader_type::VERTEX, "data/shaders/GLES2/msdf.vert"),
+        sushi::compile_shader_file(sushi::shader_type::FRAGMENT, "data/shaders/GLES2/msdf.frag"),
     });
+#else
+    auto program = sushi::link_program({
+        sushi::compile_shader_file(sushi::shader_type::VERTEX, "data/shaders/GL4/basic.vert"),
+        sushi::compile_shader_file(sushi::shader_type::FRAGMENT, "data/shaders/GL4/basic.frag"),
+    });
+
+    auto program_msdf = sushi::link_program({
+        sushi::compile_shader_file(sushi::shader_type::VERTEX, "data/shaders/GL4/msdf.vert"),
+        sushi::compile_shader_file(sushi::shader_type::FRAGMENT, "data/shaders/GL4/msdf.frag"),
+    });
+#endif
 
     sushi::set_program(program);
     sushi::set_uniform("s_texture", 0);
@@ -505,6 +533,7 @@ int main() try {
         switch (event.type) {
             case SDL_QUIT:
                 std::cout << "Goodbye!" << std::endl;
+                running = false;
                 return true;
         }
 
@@ -1008,7 +1037,7 @@ int main() try {
             modelmat = glm::translate(modelmat, {tile["x"], -int(tile["y"]), 0});
             sushi::set_uniform("normal_mat", glm::inverseTranspose(view*modelmat));
             sushi::set_uniform("MVP", (proj*view*modelmat));
-            sushi::draw_mesh(tile_meshes[tile["tile"]]);
+            sushi::draw_mesh(tile_meshes[int(tile["tile"])]);
         }
 
         // Render Entities
@@ -1047,7 +1076,12 @@ int main() try {
     std::cout << "Success." << std::endl;
 
     loop = &main_menu_loop;
+
+#ifdef __EMSCRIPTEN__
     emscripten_set_main_loop(main_loop, 0, 1);
+#else
+    while (running) main_loop();
+#endif
 
     SDL_GL_DeleteContext(glcontext);
     SDL_DestroyWindow(g_window);

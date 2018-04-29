@@ -17,6 +17,7 @@ add_library(sushi EXCLUDE_FROM_ALL
 set_property(TARGET sushi PROPERTY CXX_STANDARD 14)
 target_include_directories(sushi PUBLIC src/)
 target_link_libraries(sushi glm lodepng)
+target_compile_definitions(sushi PUBLIC GLM_ENABLE_EXPERIMENTAL)
 
 if (NOT EMSCRIPTEN)
     target_link_libraries(sushi glad)
