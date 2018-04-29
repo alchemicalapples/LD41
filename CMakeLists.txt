@@ -61,6 +61,12 @@ if(EMSCRIPTEN)
         " -s USE_SDL_IMAGE=2"
         " -s USE_SDL_NET=2"
         " -s USE_FREETYPE=1")
+    option(LD41_USE_WASM "Use WASM" ON)
+    if (LD41_USE_WASM)
+        string(PREPEND LD41_CLIENT_LINK_FLAGS
+            " -s BINARYEN=1"
+            " -s \"BINARYEN_TRAP_MODE='js'\"")
+    endif()
     string(CONCAT LD41_CLIENT_LINK_FLAGS_DEBUG
         " -g4"
         " --cpuprofiler"
