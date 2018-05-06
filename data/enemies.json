@@ -16,7 +16,7 @@
                 "cycle": "walk"
             },
             "speed": {
-                "speedness": 2
+                "speedness": 5
             },
             "pathing": {},
             "health": {
@@ -46,7 +46,7 @@
             },
             "pathing": {},
             "health": {
-                "max_health": 10
+                "max_health": 20
             },
             "enemy_tag": {}
         }
@@ -61,7 +61,7 @@
                 "top": 0.5
             },
             "script": {
-                "name": "actor/enemy"
+                "name": "actor/ghost"
             },
             "animation": {
                 "name": "ghost",
@@ -70,9 +70,8 @@
             "speed": {
                 "speedness": 2
             },
-            "pathing": {},
             "health": {
-                "max_health": 10
+                "max_health": 5
             },
             "enemy_tag": {}
         }

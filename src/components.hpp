@@ -94,6 +94,7 @@ struct tower {
     double delay = 1;
     double range = 1;
     double speed = 1;
+    int damage = 1;
     std::string bullet_type = "standard";
 };
 
@@ -103,6 +104,7 @@ REGISTER(tower,
          MEMBER(delay),
          MEMBER(range),
          MEMBER(speed),
+         MEMBER(damage),
          MEMBER(bullet_type))
 
 struct ball {
