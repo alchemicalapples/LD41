@@ -1,5 +1,5 @@
 {
-    "next_stage": "level4",
+    "next_stage": "level5",
     "entities": [
         {
             "script": {
@@ -45,12 +45,7 @@
                 "name": "actor/spawner"
             },
             "spawner": {
-                "next_spawn": 10,
-                "spawnrates": [
-                    ["zombie", 15],
-                    ["skeleton", 10],
-                    ["ghost", 5]
-                ]
+              "max_number": 30
             }
         }
     ],
@@ -290,7 +285,7 @@
                 {
                     "y": 1,
                     "flipX": false,
-                    "tile": 1,
+                    "tile": 2,
                     "index": 29,
                     "rot": 0,
                     "x": 9
@@ -298,7 +293,7 @@
                 {
                     "y": 1,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 3,
                     "index": 30,
                     "rot": 0,
                     "x": 10
@@ -306,7 +301,7 @@
                 {
                     "y": 1,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 3,
                     "index": 31,
                     "rot": 0,
                     "x": 11
@@ -314,7 +309,7 @@
                 {
                     "y": 1,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 3,
                     "index": 32,
                     "rot": 0,
                     "x": 12
@@ -322,7 +317,7 @@
                 {
                     "y": 1,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 3,
                     "index": 33,
                     "rot": 0,
                     "x": 13
@@ -330,7 +325,7 @@
                 {
                     "y": 1,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 5,
                     "index": 34,
                     "rot": 0,
                     "x": 14
@@ -450,7 +445,7 @@
                 {
                     "y": 2,
                     "flipX": false,
-                    "tile": 1,
+                    "tile": 0,
                     "index": 49,
                     "rot": 0,
                     "x": 9
@@ -458,7 +453,7 @@
                 {
                     "y": 2,
                     "flipX": false,
-                    "tile": 6,
+                    "tile": 0,
                     "index": 50,
                     "rot": 0,
                     "x": 10
@@ -466,7 +461,7 @@
                 {
                     "y": 2,
                     "flipX": false,
-                    "tile": 5,
+                    "tile": 0,
                     "index": 51,
                     "rot": 0,
                     "x": 11
@@ -482,7 +477,7 @@
                 {
                     "y": 2,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 7,
                     "index": 53,
                     "rot": 0,
                     "x": 13
@@ -490,7 +485,7 @@
                 {
                     "y": 2,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 1,
                     "index": 54,
                     "rot": 0,
                     "x": 14
@@ -586,7 +581,7 @@
                 {
                     "y": 3,
                     "flipX": false,
-                    "tile": 7,
+                    "tile": 0,
                     "index": 66,
                     "rot": 0,
                     "x": 6
@@ -602,7 +597,7 @@
                 {
                     "y": 3,
                     "flipX": false,
-                    "tile": 7,
+                    "tile": 0,
                     "index": 68,
                     "rot": 0,
                     "x": 8
@@ -610,7 +605,7 @@
                 {
                     "y": 3,
                     "flipX": false,
-                    "tile": 1,
+                    "tile": 7,
                     "index": 69,
                     "rot": 0,
                     "x": 9
@@ -618,7 +613,7 @@
                 {
                     "y": 3,
                     "flipX": false,
-                    "tile": 1,
+                    "tile": 7,
                     "index": 70,
                     "rot": 0,
                     "x": 10
@@ -626,7 +621,7 @@
                 {
                     "y": 3,
                     "flipX": false,
-                    "tile": 1,
+                    "tile": 0,
                     "index": 71,
                     "rot": 0,
                     "x": 11
@@ -634,7 +629,7 @@
                 {
                     "y": 3,
                     "flipX": false,
-                    "tile": 7,
+                    "tile": 0,
                     "index": 72,
                     "rot": 0,
                     "x": 12
@@ -650,7 +645,7 @@
                 {
                     "y": 3,
                     "flipX": false,
-                    "tile": 7,
+                    "tile": 1,
                     "index": 74,
                     "rot": 0,
                     "x": 14
@@ -738,7 +733,7 @@
                 {
                     "y": 4,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 6,
                     "index": 85,
                     "rot": 0,
                     "x": 5
@@ -746,7 +741,7 @@
                 {
                     "y": 4,
                     "flipX": false,
-                    "tile": 7,
+                    "tile": 3,
                     "index": 86,
                     "rot": 0,
                     "x": 6
@@ -754,7 +749,7 @@
                 {
                     "y": 4,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 3,
                     "index": 87,
                     "rot": 0,
                     "x": 7
@@ -762,7 +757,7 @@
                 {
                     "y": 4,
                     "flipX": false,
-                    "tile": 7,
+                    "tile": 3,
                     "index": 88,
                     "rot": 0,
                     "x": 8
@@ -770,7 +765,7 @@
                 {
                     "y": 4,
                     "flipX": false,
-                    "tile": 1,
+                    "tile": 3,
                     "index": 89,
                     "rot": 0,
                     "x": 9
@@ -778,7 +773,7 @@
                 {
                     "y": 4,
                     "flipX": false,
-                    "tile": 1,
+                    "tile": 3,
                     "index": 90,
                     "rot": 0,
                     "x": 10
@@ -786,7 +781,7 @@
                 {
                     "y": 4,
                     "flipX": false,
-                    "tile": 1,
+                    "tile": 3,
                     "index": 91,
                     "rot": 0,
                     "x": 11
@@ -794,7 +789,7 @@
                 {
                     "y": 4,
                     "flipX": false,
-                    "tile": 7,
+                    "tile": 3,
                     "index": 92,
                     "rot": 0,
                     "x": 12
@@ -802,7 +797,7 @@
                 {
                     "y": 4,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 3,
                     "index": 93,
                     "rot": 0,
                     "x": 13
@@ -810,7 +805,7 @@
                 {
                     "y": 4,
                     "flipX": false,
-                    "tile": 7,
+                    "tile": 4,
                     "index": 94,
                     "rot": 0,
                     "x": 14
@@ -898,7 +893,7 @@
                 {
                     "y": 5,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 1,
                     "index": 105,
                     "rot": 0,
                     "x": 5
@@ -906,7 +901,7 @@
                 {
                     "y": 5,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 7,
                     "index": 106,
                     "rot": 0,
                     "x": 6
@@ -930,7 +925,7 @@
                 {
                     "y": 5,
                     "flipX": false,
-                    "tile": 2,
+                    "tile": 0,
                     "index": 109,
                     "rot": 0,
                     "x": 9
@@ -938,7 +933,7 @@
                 {
                     "y": 5,
                     "flipX": false,
-                    "tile": 4,
+                    "tile": 0,
                     "index": 110,
                     "rot": 0,
                     "x": 10
@@ -946,7 +941,7 @@
                 {
                     "y": 5,
                     "flipX": false,
-                    "tile": 1,
+                    "tile": 0,
                     "index": 111,
                     "rot": 0,
                     "x": 11
@@ -1058,7 +1053,7 @@
                 {
                     "y": 6,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 1,
                     "index": 125,
                     "rot": 0,
                     "x": 5
@@ -1106,7 +1101,7 @@
                 {
                     "y": 6,
                     "flipX": false,
-                    "tile": 1,
+                    "tile": 0,
                     "index": 131,
                     "rot": 0,
                     "x": 11
@@ -1218,7 +1213,7 @@
                 {
                     "y": 7,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 2,
                     "index": 145,
                     "rot": 0,
                     "x": 5
@@ -1226,7 +1221,7 @@
                 {
                     "y": 7,
                     "flipX": false,
-                    "tile": 7,
+                    "tile": 3,
                     "index": 146,
                     "rot": 0,
                     "x": 6
@@ -1234,7 +1229,7 @@
                 {
                     "y": 7,
                     "flipX": false,
-                    "tile": 6,
+                    "tile": 3,
                     "index": 147,
                     "rot": 0,
                     "x": 7
@@ -1266,7 +1261,7 @@
                 {
                     "y": 7,
                     "flipX": false,
-                    "tile": 4,
+                    "tile": 3,
                     "index": 151,
                     "rot": 0,
                     "x": 11
@@ -1274,7 +1269,7 @@
                 {
                     "y": 7,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 3,
                     "index": 152,
                     "rot": 0,
                     "x": 12
@@ -1282,7 +1277,7 @@
                 {
                     "y": 7,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 3,
                     "index": 153,
                     "rot": 0,
                     "x": 13
@@ -1290,7 +1285,7 @@
                 {
                     "y": 7,
                     "flipX": false,
-                    "tile": 7,
+                    "tile": 5,
                     "index": 154,
                     "rot": 0,
                     "x": 14
@@ -1386,7 +1381,7 @@
                 {
                     "y": 8,
                     "flipX": false,
-                    "tile": 7,
+                    "tile": 0,
                     "index": 166,
                     "rot": 0,
                     "x": 6
@@ -1394,7 +1389,7 @@
                 {
                     "y": 8,
                     "flipX": false,
-                    "tile": 1,
+                    "tile": 0,
                     "index": 167,
                     "rot": 0,
                     "x": 7
@@ -1410,7 +1405,7 @@
                 {
                     "y": 8,
                     "flipX": false,
-                    "tile": 7,
+                    "tile": 0,
                     "index": 169,
                     "rot": 0,
                     "x": 9
@@ -1418,7 +1413,7 @@
                 {
                     "y": 8,
                     "flipX": false,
-                    "tile": 7,
+                    "tile": 0,
                     "index": 170,
                     "rot": 0,
                     "x": 10
@@ -1442,7 +1437,7 @@
                 {
                     "y": 8,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 7,
                     "index": 173,
                     "rot": 0,
                     "x": 13
@@ -1450,7 +1445,7 @@
                 {
                     "y": 8,
                     "flipX": false,
-                    "tile": 7,
+                    "tile": 1,
                     "index": 174,
                     "rot": 0,
                     "x": 14
@@ -1546,7 +1541,7 @@
                 {
                     "y": 9,
                     "flipX": false,
-                    "tile": 7,
+                    "tile": 0,
                     "index": 186,
                     "rot": 0,
                     "x": 6
@@ -1554,7 +1549,7 @@
                 {
                     "y": 9,
                     "flipX": false,
-                    "tile": 2,
+                    "tile": 0,
                     "index": 187,
                     "rot": 0,
                     "x": 7
@@ -1562,7 +1557,7 @@
                 {
                     "y": 9,
                     "flipX": false,
-                    "tile": 3,
+                    "tile": 0,
                     "index": 188,
                     "rot": 0,
                     "x": 8
@@ -1570,7 +1565,7 @@
                 {
                     "y": 9,
                     "flipX": false,
-                    "tile": 3,
+                    "tile": 7,
                     "index": 189,
                     "rot": 0,
                     "x": 9
@@ -1578,7 +1573,7 @@
                 {
                     "y": 9,
                     "flipX": false,
-                    "tile": 3,
+                    "tile": 7,
                     "index": 190,
                     "rot": 0,
                     "x": 10
@@ -1586,7 +1581,7 @@
                 {
                     "y": 9,
                     "flipX": false,
-                    "tile": 3,
+                    "tile": 0,
                     "index": 191,
                     "rot": 0,
                     "x": 11
@@ -1594,7 +1589,7 @@
                 {
                     "y": 9,
                     "flipX": false,
-                    "tile": 3,
+                    "tile": 0,
                     "index": 192,
                     "rot": 0,
                     "x": 12
@@ -1602,7 +1597,7 @@
                 {
                     "y": 9,
                     "flipX": false,
-                    "tile": 5,
+                    "tile": 0,
                     "index": 193,
                     "rot": 0,
                     "x": 13
@@ -1610,7 +1605,7 @@
                 {
                     "y": 9,
                     "flipX": false,
-                    "tile": 7,
+                    "tile": 1,
                     "index": 194,
                     "rot": 0,
                     "x": 14
@@ -1698,7 +1693,7 @@
                 {
                     "y": 10,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 6,
                     "index": 205,
                     "rot": 0,
                     "x": 5
@@ -1706,7 +1701,7 @@
                 {
                     "y": 10,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 3,
                     "index": 206,
                     "rot": 0,
                     "x": 6
@@ -1714,7 +1709,7 @@
                 {
                     "y": 10,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 3,
                     "index": 207,
                     "rot": 0,
                     "x": 7
@@ -1722,7 +1717,7 @@
                 {
                     "y": 10,
                     "flipX": false,
-                    "tile": 7,
+                    "tile": 3,
                     "index": 208,
                     "rot": 0,
                     "x": 8
@@ -1730,7 +1725,7 @@
                 {
                     "y": 10,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 3,
                     "index": 209,
                     "rot": 0,
                     "x": 9
@@ -1738,7 +1733,7 @@
                 {
                     "y": 10,
                     "flipX": false,
-                    "tile": 7,
+                    "tile": 3,
                     "index": 210,
                     "rot": 0,
                     "x": 10
@@ -1746,7 +1741,7 @@
                 {
                     "y": 10,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 3,
                     "index": 211,
                     "rot": 0,
                     "x": 11
@@ -1754,7 +1749,7 @@
                 {
                     "y": 10,
                     "flipX": false,
-                    "tile": 7,
+                    "tile": 3,
                     "index": 212,
                     "rot": 0,
                     "x": 12
@@ -1762,7 +1757,7 @@
                 {
                     "y": 10,
                     "flipX": false,
-                    "tile": 1,
+                    "tile": 3,
                     "index": 213,
                     "rot": 0,
                     "x": 13
@@ -1770,7 +1765,7 @@
                 {
                     "y": 10,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 4,
                     "index": 214,
                     "rot": 0,
                     "x": 14
@@ -1858,7 +1853,7 @@
                 {
                     "y": 11,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 1,
                     "index": 225,
                     "rot": 0,
                     "x": 5
@@ -1866,7 +1861,7 @@
                 {
                     "y": 11,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 7,
                     "index": 226,
                     "rot": 0,
                     "x": 6
@@ -1922,7 +1917,7 @@
                 {
                     "y": 11,
                     "flipX": false,
-                    "tile": 1,
+                    "tile": 0,
                     "index": 233,
                     "rot": 0,
                     "x": 13
@@ -2018,7 +2013,7 @@
                 {
                     "y": 12,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 1,
                     "index": 245,
                     "rot": 0,
                     "x": 5
@@ -2058,7 +2053,7 @@
                 {
                     "y": 12,
                     "flipX": false,
-                    "tile": 6,
+                    "tile": 0,
                     "index": 250,
                     "rot": 0,
                     "x": 10
@@ -2066,7 +2061,7 @@
                 {
                     "y": 12,
                     "flipX": false,
-                    "tile": 3,
+                    "tile": 0,
                     "index": 251,
                     "rot": 0,
                     "x": 11
@@ -2074,7 +2069,7 @@
                 {
                     "y": 12,
                     "flipX": false,
-                    "tile": 3,
+                    "tile": 0,
                     "index": 252,
                     "rot": 0,
                     "x": 12
@@ -2082,7 +2077,7 @@
                 {
                     "y": 12,
                     "flipX": false,
-                    "tile": 4,
+                    "tile": 0,
                     "index": 253,
                     "rot": 0,
                     "x": 13
@@ -2178,7 +2173,7 @@
                 {
                     "y": 13,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 2,
                     "index": 265,
                     "rot": 0,
                     "x": 5
@@ -2186,7 +2181,7 @@
                 {
                     "y": 13,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 3,
                     "index": 266,
                     "rot": 0,
                     "x": 6
@@ -2194,7 +2189,7 @@
                 {
                     "y": 13,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 3,
                     "index": 267,
                     "rot": 0,
                     "x": 7
@@ -2202,7 +2197,7 @@
                 {
                     "y": 13,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 3,
                     "index": 268,
                     "rot": 0,
                     "x": 8
@@ -2210,7 +2205,7 @@
                 {
                     "y": 13,
                     "flipX": false,
-                    "tile": 0,
+                    "tile": 3,
                     "index": 269,
                     "rot": 0,
                     "x": 9
@@ -2218,7 +2213,7 @@
                 {
                     "y": 13,
                     "flipX": false,
-                    "tile": 1,
+                    "tile": 5,
                     "index": 270,
                     "rot": 0,
                     "x": 10
