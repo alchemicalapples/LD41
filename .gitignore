@@ -2,6 +2,7 @@
 !data
 !ext
 !src
+!emberjs_shim_src
 !static
 !.gitignore
 !CMakeLists.txt

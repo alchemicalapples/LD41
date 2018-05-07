@@ -4,11 +4,12 @@
         "template": {
             "tower": {
                 "delay": 1,
-                "range": 10,
-                "speed": 3
+                "range": 4,
+                "speed": 2,
+                "damage": 5
             },
             "detector": {
-                "radius": 10
+                "radius": 4
             },
             "script": {
                 "name": "actor/tower"
@@ -26,6 +27,7 @@
                 "delay": 0.25,
                 "range": 3,
                 "speed": 5,
+                "damage": 1,
                 "bullet_type": "machinegun"
             },
             "detector": {

@@ -94,6 +94,7 @@ struct tower {
     double delay = 1;
     double range = 1;
     double speed = 1;
+    int damage = 1;
     std::string bullet_type = "standard";
 };
 
@@ -103,6 +104,7 @@ REGISTER(tower,
          MEMBER(delay),
          MEMBER(range),
          MEMBER(speed),
+         MEMBER(damage),
          MEMBER(bullet_type))
 
 struct ball {
@@ -182,12 +184,12 @@ REGISTER(pathing,
 
 struct spawner {
     float next_spawn = 0;
-    int max_number;
+    sol::table spawnrates;
 };
 
 REGISTER(spawner,
          MEMBER(next_spawn),
-         MEMBER(max_number))
+         MEMBER(spawnrates))
 
 using enemy_tag = ginseng::tag<struct emeny_tag_t>;
 REGISTER(enemy_tag)
