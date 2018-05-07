@@ -45,7 +45,11 @@
                 "name": "actor/spawner"
             },
             "spawner": {
-              "max_number": 15
+                "next_spawn": 10,
+                "spawnrates": [
+                    ["zombie", 10],
+                    ["skeleton", 5]
+                ]
             }
        }
     ],

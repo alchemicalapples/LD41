@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) try {
     std::cout << "Creating Lua state..." << std::endl;
 
     sol::state lua;
-    lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::string);
+    lua.open_libraries(sol::lib::base, sol::lib::math, sol::lib::string, sol::lib::table);
 
     auto nlohmann_table = lua.create_named_table("component");
     nlohmann_table.new_usertype<nlohmann::json>("json");
@@ -504,6 +504,7 @@ int main(int argc, char* argv[]) try {
     lua["set_health_display"] = set_health_display;
 
     struct enemy_info {
+        std::string name;
         nlohmann::json json;
     };
 
@@ -516,17 +517,28 @@ int main(int argc, char* argv[]) try {
         file >> json;
 
         for (auto& enemy : json) {
-            enemies.push_back({enemy["template"]});
+            enemies.push_back({enemy["name"], enemy["template"]});
         }
     }
 
     auto rng = std::mt19937(std::random_device{}());
     auto roll_enemy = std::uniform_int_distribution<>(0, enemies.size()-1);
 
+    auto get_enemy = [&](const std::string& name) {
+        for (auto& enemy : enemies) {
+            if (enemy.name == name) {
+                return enemy.json;
+            }
+        }
+        std::cerr << "enemy name not found: " << name << std::endl;
+        return nlohmann::json{};
+    };
+
     auto get_random_enemy = [&]() {
         return enemies[roll_enemy(rng)].json;
     };
 
+    lua["get_enemy"] = get_enemy;
     lua["get_random_enemy"] = get_random_enemy;
 
     auto handle_game_input = [&](const SDL_Event& event){
