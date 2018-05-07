@@ -356,15 +356,20 @@ int main(int argc, char* argv[]) try {
         {{{{0,0,0},{1,1,1},{2,2,2}}},{{{2,2,2},{3,3,3},{0,0,0}}}}
     );
 
-    sushi::static_mesh tile_meshes[8];
+    sushi::static_mesh tile_meshes[12];
 
-    for (int i = 0; i < 8; i++) {
-        float vOffSetRight = (i + 1) * (1.f/8);
-        float vOffSetLeft = ((i + 1) * (1.f/8)) - 0.125f;
+    for (int i = 0; i < 12; i++) {
+        //if (i > 8)
+        int row = i / 8;
+        int column = i % 8;
+        float vOffSetRight = (column + 1) * (1.f/8);
+        float vOffSetLeft = ((column) * (1.f/8));// - 0.125f;
+        float uOffSetUp = (row + 1) * (1.f/2);
+        float uOffSetDown = (row) * (1.f/2); 
         tile_meshes[i] = sushi::load_static_mesh_data(
             {{-0.5f, 0.5f, 0.f},{-0.5f, -0.5f, 0.f},{0.5f, -0.5f, 0.f},{0.5f, 0.5f, 0.f}},
             {{0.f, 1.f, 0.f},{0.f, 1.f, 0.f},{0.f, 1.f, 0.f},{0.f, 1.f, 0.f}},
-            {{vOffSetLeft, 0.f},{vOffSetLeft, 1.f},{vOffSetRight, 1.f},{vOffSetRight, 0.f}},
+            {{vOffSetLeft, uOffSetDown},{vOffSetLeft, uOffSetUp},{vOffSetRight, uOffSetUp},{vOffSetRight, uOffSetDown}},
             {{{{0,0,0},{1,1,1},{2,2,2}}},{{{2,2,2},{3,3,3},{0,0,0}}}}
         );
     }
