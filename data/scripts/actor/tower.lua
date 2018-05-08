@@ -24,7 +24,7 @@ function update(eid, delta)
 
                 if tower.time > tower.delay then
                     tower.time = 0
-                    if tower.speed == 3 then
+                    if tower.speed == 2 then
                       play_sfx("standardshoot")
                     end
                     if tower.speed == 5 then

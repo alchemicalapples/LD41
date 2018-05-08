@@ -7,6 +7,7 @@ function on_death(eid)
     anim.name = "icefield"
     anim.cycle = "idle"
     anim.scale = 5
+    play_sfx("icehit")
     local position = component.position.new(entities:get_component(eid, component.position))
     local detect = component.detector.new()
     detect.radius = 3

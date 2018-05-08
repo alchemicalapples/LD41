@@ -24,7 +24,7 @@ function update(eid, delta)
 
                 if tower.time > tower.delay then
                     tower.time = 0
-                    play_sfx("standardshoot")
+                    play_sfx("iceturret")
                     local animation = component.animation.new()
                     animation.name = "bullet"
                     animation.cycle = tower.bullet_type
