@@ -1,0 +1,25 @@
+{
+    "idle": {
+        "frame":
+            [{
+                "path": "fields/icefield1",
+                "t": 20,
+                "nextFrame": 1
+            },
+            {
+                "path": "fields/icefield2",
+                "t": 20,
+                "nextFrame": 2
+            },
+            {
+                "path": "fields/icefield3",
+                "t": 20,
+                "nextFrame": 3
+            },
+            {
+                "path": "fields/icefield4",
+                "t": 20,
+                "nextFrame": 0
+            }]
+    }
+}

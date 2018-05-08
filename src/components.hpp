@@ -136,6 +136,7 @@ struct animation {
     float offset_x = 0;
     float offset_y = 0;
     float rot = 0;
+    float scale = 1;
 };
 
 REGISTER(animation,
@@ -145,7 +146,8 @@ REGISTER(animation,
          MEMBER(t),
          MEMBER(offset_x),
          MEMBER(offset_y),
-         MEMBER(rot))
+         MEMBER(rot),
+         MEMBER(scale))
 
 struct death_timer {
     double time = 0;

@@ -72,7 +72,10 @@ void collision(DB& entities, double delta, cache<sol::environment>& environment_
 void scripting(DB& entities, double delta, cache<sol::environment>& environment_cache) {
     entities.visit(
         [&](DB::ent_id eid, const component::script& script) {
-            (*environment_cache.get(script.name))["update"](eid, delta);
+            auto update = (*environment_cache.get(script.name))["update"];
+            if (update.valid()) {
+                update(eid, delta);
+            }
         });
 }
 
@@ -161,6 +164,7 @@ void render(DB& entities, double delta, glm::mat4 proj, glm::mat4 view, sushi::s
                 auto modelmat = glm::mat4(1); // need
                 modelmat = glm::translate(modelmat, {int(pos.x*16)/16.f, int(pos.y*16)/16.f, 0});
 
+                modelmat = glm::scale(modelmat, {anim.scale, anim.scale, anim.scale});
                 modelmat = glm::rotate(modelmat, anim.rot, {0, 0, 1});
                 modelmat = glm::translate(modelmat, {anim.offset_x, anim.offset_y, 0});
 

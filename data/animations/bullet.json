@@ -14,5 +14,13 @@
                 "t": 40,
                 "nextFrame": 0
             }]
+    },
+    "ice": {
+        "frame":
+            [{
+                "path": "bullets/icebullet",
+                "t": 40,
+                "nextFrame": 0
+            }]
     }
 }

@@ -41,5 +41,26 @@
                 "cycle": "machinegun"
             }
         }
+    },
+    {
+        "name": "iceturret",
+        "template": {
+            "tower": {
+                "delay": 2.5,
+                "range": 5,
+                "speed": 5,
+                "bullet_type": "ice"
+            },
+            "detector": {
+                "radius": 5
+            },
+            "script": {
+                "name": "actor/icetower"
+            },
+            "animation": {
+                "name": "towers",
+                "cycle": "ice"
+            }
+        }
     }
 ]

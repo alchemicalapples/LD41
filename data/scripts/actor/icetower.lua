@@ -1,0 +1,66 @@
+function update(eid, delta)
+    local pos = entities:get_component(eid, component.position)
+    local tower = entities:get_component(eid, component.tower)
+    local detector = entities:get_component(eid, component.detector)
+
+    tower.time = tower.time + delta
+
+    if detector.entity_list:size() > 0 then
+        for _,target_eid in ipairs(detector.entity_list) do
+            if entities:exists(target_eid) and entities:has_component(target_eid, component.enemy_tag) then
+                local enemy_pos = entities:get_component(detector.entity_list[1], component.position)
+                local bpos = component.position.new()
+                bpos.x = pos.x
+                bpos.y = pos.y
+
+                local vx,vy = normalize_dimension((enemy_pos.x-pos.x),(enemy_pos.y-pos.y))
+                local bvel = component.velocity.new()
+                bvel.vx = vx*tower.speed
+                bvel.vy = vy*tower.speed
+
+                -- turret rotation
+                local anim = entities:get_component(eid, component.animation)
+                anim.rot = math.atan(bvel.vy, bvel.vx)
+
+                if tower.time > tower.delay then
+                    tower.time = 0
+                    play_sfx("standardshoot")
+                    local animation = component.animation.new()
+                    animation.name = "bullet"
+                    animation.cycle = tower.bullet_type
+                    animation.rot = anim.rot
+                    local timer = component.death_timer.new()
+                    timer.time = math.sqrt((enemy_pos.x-pos.x)^2 + (enemy_pos.y-pos.y)^2) / tower.speed
+                    local bullet_tag = component.bullet_tag.new()
+                    local bullet_comp = component.bullet.new()
+                    bullet_comp.tower = eid
+                    local bullet = entities:create_entity()
+                    local script = component.script.new()
+                    script.name = "actor/icebullet"
+                    entities:create_component(bullet, bpos)
+                    entities:create_component(bullet, bvel)
+                    entities:create_component(bullet, animation)
+                    entities:create_component(bullet, bullet_tag)
+                    entities:create_component(bullet, bullet_comp)
+                    entities:create_component(bullet, timer)
+                    entities:create_component(bullet, script)
+                end
+
+                break
+            end
+        end
+    end
+end
+
+function normalize_dimension(x,y)
+    local angle = math.atan2(x,y)
+    local lx = math.sin(angle)
+    local ly = math.cos(angle)
+    return lx,ly
+end
+
+function on_enter(eid, other)
+end
+
+function on_leave(eid, other)
+end
