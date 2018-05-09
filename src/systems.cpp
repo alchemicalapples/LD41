@@ -187,4 +187,25 @@ void render(DB& entities, double delta, glm::mat4 proj, glm::mat4 view, sushi::s
         });
 }
 
+void fire_damage(DB& entities, double delta) {
+    entities.visit(
+        [&](DB::ent_id eid, component::fire_damage& fire, component::health& health){
+            fire.next -= delta;
+            fire.duration -= delta;
+
+            if (fire.next <= 0) {
+                fire.next = fire.rate;
+                health.max_health -= 1;
+            }
+
+            if (fire.duration <= 0) {
+                entities.destroy_component<component::fire_damage>(eid);
+            }
+
+            if (health.max_health <= 0) {
+                entities.create_component(eid, component::death_timer{});
+            }
+        });
+}
+
 } //namespace systems

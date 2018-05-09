@@ -20,6 +20,7 @@ void register_components(sol::table& component_table) {
     scripting::register_type<component::speed>(component_table);
     scripting::register_type<component::pathing>(component_table);
     scripting::register_type<component::spawner>(component_table);
+    scripting::register_type<component::fire_damage>(component_table);
 
     scripting::register_type<component::enemy_tag>(component_table);
     scripting::register_type<component::bullet_tag>(component_table);

@@ -24,8 +24,8 @@
         "name": "machinegunturret",
         "template": {
             "tower": {
-                "delay": 0.25,
-                "range": 3,
+                "delay": 0.128,
+                "range": 1.5,
                 "speed": 5,
                 "damage": 1,
                 "bullet_type": "machinegun"
@@ -34,7 +34,7 @@
                 "radius": 1.5
             },
             "script": {
-                "name": "actor/tower"
+                "name": "actor/firetower"
             },
             "animation": {
                 "name": "towers",

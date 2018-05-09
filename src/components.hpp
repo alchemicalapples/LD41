@@ -193,6 +193,17 @@ REGISTER(spawner,
          MEMBER(next_spawn),
          MEMBER(spawnrates))
 
+struct fire_damage {
+    float duration = 0;
+    float rate = 0;
+    float next = 0;
+};
+
+REGISTER(fire_damage,
+         MEMBER(duration),
+         MEMBER(rate),
+         MEMBER(next))
+
 using enemy_tag = ginseng::tag<struct emeny_tag_t>;
 REGISTER(enemy_tag)
 

@@ -23,6 +23,7 @@ void scripting(DB& entities, double delta, cache<sol::environment>& environment_
 void detection(DB& entities, double delta, cache<sol::environment>& environment_cache);
 void death_timer(DB& entities, double delta, cache<sol::environment>& environment_cache);
 void render(DB& entities, double delta, glm::mat4 proj, glm::mat4 view, sushi::static_mesh& sprite_mesh, cache<sushi::texture_2d>& texture_cache, cache<nlohmann::json>& animation_cache);
+void fire_damage(DB& entities, double delta);
 
 } //namespace systems
 

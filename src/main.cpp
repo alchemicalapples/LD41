@@ -1001,6 +1001,7 @@ int main(int argc, char* argv[]) try {
         systems::collision(entities, delta, environment_cache);
         systems::scripting(entities, delta, environment_cache);
         systems::detection(entities, delta, environment_cache);
+        systems::fire_damage(entities, delta);
 
         bool won = true;
 
