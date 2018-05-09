@@ -186,11 +186,15 @@ REGISTER(pathing,
 
 struct spawner {
     float next_spawn = 0;
+    float rate = 3;
+    float decay = 0.95;
     sol::table spawnrates;
 };
 
 REGISTER(spawner,
          MEMBER(next_spawn),
+         MEMBER(rate),
+         MEMBER(decay),
          MEMBER(spawnrates))
 
 struct fire_damage {

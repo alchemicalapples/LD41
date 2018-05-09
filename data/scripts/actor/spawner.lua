@@ -26,7 +26,8 @@ function update(eid, delta)
         entities:create_component(enemyMove, epos)
         entities:create_component(enemyMove, evel)
 
-        spawner.next_spawn = 3
+        spawner.next_spawn = spawner.rate
+        spawner.rate = spawner.rate * spawner.decay
         if #spawner.spawnrates == 0 then
             entities:create_component(eid, component.death_timer.new())
         end
