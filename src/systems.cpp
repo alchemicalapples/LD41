@@ -151,6 +151,12 @@ void death_timer(DB& entities, double delta, cache<sol::environment>& environmen
                         }
                     }
                     entities.destroy_entity(eid);
+                    entities.visit([&](component::detector& detect){
+                            auto iter = std::find(begin(detect.entity_list), end(detect.entity_list), eid);
+                            if (iter != end(detect.entity_list)) {
+                                detect.entity_list.erase(iter);
+                            }
+                        });
                 }
             }
         });
@@ -159,7 +165,7 @@ void death_timer(DB& entities, double delta, cache<sol::environment>& environmen
 void render(DB& entities, double delta, glm::mat4 proj, glm::mat4 view, sushi::static_mesh& sprite_mesh, cache<sushi::texture_2d>& texture_cache, cache<nlohmann::json>& animation_cache) {
     auto frustum = sushi::frustum(proj*view);
     entities.visit(
-        [&](const component::position& pos, component::animation& anim){
+        [&](DB::ent_id eid, const component::position& pos, component::animation& anim){
             if (frustum.contains({pos.x, pos.y, 0.f}, std::sqrt(0.5*0.5*2.f))) {
                 auto modelmat = glm::mat4(1); // need
                 modelmat = glm::translate(modelmat, {int(pos.x*16)/16.f, int(pos.y*16)/16.f, 0});
@@ -167,6 +173,12 @@ void render(DB& entities, double delta, glm::mat4 proj, glm::mat4 view, sushi::s
                 modelmat = glm::scale(modelmat, {anim.scale, anim.scale, anim.scale});
                 modelmat = glm::rotate(modelmat, anim.rot, {0, 0, 1});
                 modelmat = glm::translate(modelmat, {anim.offset_x, anim.offset_y, 0});
+
+                auto tint = glm::vec4{1,1,1,1};
+
+                if (entities.has_component<component::fire_damage>(eid)) {
+                    tint = {1,0,0,1};
+                }
 
                 // animation code
                 auto jsonAnim = *animation_cache.get(anim.name);
@@ -182,6 +194,7 @@ void render(DB& entities, double delta, glm::mat4 proj, glm::mat4 view, sushi::s
                 sushi::set_texture(0, *texture_cache.get(pathToTexture));
                 sushi::set_uniform("normal_mat", glm::inverseTranspose(view*modelmat));
                 sushi::set_uniform("MVP", (proj*view*modelmat));
+                sushi::set_uniform("tint", tint);
                 sushi::draw_mesh(sprite_mesh);
             }
         });
