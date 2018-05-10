@@ -60,6 +60,7 @@ function ball_states.shoot(eid, ball, delta)
         vel.vx = 10 * dx / dist
         vel.vy = 10 * dy / dist
         ball.state = "flying"
+        set_last_power(power)
         set_powermeter(0)
         entities:create_component(eid, vel)
         entities:create_component(ball.marker, component.death_timer.new())

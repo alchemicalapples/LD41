@@ -418,7 +418,14 @@ int main(int argc, char* argv[]) try {
     powermeter_panel->set_texture("powermeter");
     powermeter_panel->show();
 
+    auto lastpower_panel = std::make_shared<gui::panel>();
+    lastpower_panel->set_position({0,0});
+    lastpower_panel->set_size({16,1});
+    lastpower_panel->set_texture("powermeter");
+    lastpower_panel->show();
+
     powermeter_border_panel->add_child(powermeter_panel);
+    powermeter_border_panel->add_child(lastpower_panel);
 
     struct tower_info {
         std::shared_ptr<gui::panel> panel;
@@ -501,6 +508,12 @@ int main(int argc, char* argv[]) try {
 
     lua["set_powermeter"] = set_powermeter;
     lua["get_powermeter"] = get_powermeter;
+
+    auto set_last_power = [&](float percent) {
+        lastpower_panel->set_position({0, 80*percent});
+    };
+
+    lua["set_last_power"] = set_last_power;
 
     auto set_health_display = [&](int health) {
         health_label->set_text(renderer, "Health: " + std::to_string(health));
