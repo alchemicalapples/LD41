@@ -10,8 +10,13 @@
     "machinegun": {
         "frame":
             [{
-                "path": "bullets/machinegunbullet",
-                "t": 40,
+                "path": "bullets/fire1",
+                "t": 10,
+                "nextFrame": 1
+            },
+            {
+                "path": "bullets/fire2",
+                "t": 10,
                 "nextFrame": 0
             }]
     },
