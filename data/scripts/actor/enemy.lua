@@ -27,8 +27,9 @@ function on_collide(eid1, eid2, aabb)
         local health = entities:get_component(eid1, component.health)
         local bullet = entities:get_component(eid2, component.bullet)
         local detector = entities:get_component(bullet.tower, component.detector)
+        local tower = entities:get_component(bullet.tower, component.tower)
 
-        health.max_health = health.max_health - 1
+        health.max_health = health.max_health - tower.damage
         if health.max_health == 0 then
             local idx = detector.entity_list:find(eid1)
             if idx then
