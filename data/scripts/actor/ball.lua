@@ -23,13 +23,13 @@ end
 
 function ball_states.swing(eid, ball, delta)
     if input.left then
-        ball.angle = ball.angle + math.pi/2 * delta * 3
+        ball.angle = ball.angle + math.pi/2 * delta * 2
         if ball.angle > math.pi/2 then
             ball.angle = math.pi/2
         end
     end
     if input.right then
-        ball.angle = ball.angle - math.pi/2 * delta * 3
+        ball.angle = ball.angle - math.pi/2 * delta * 2
         if ball.angle < -math.pi/2 then
             ball.angle = -math.pi/2
         end
