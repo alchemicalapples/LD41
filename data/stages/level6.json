@@ -1,12 +1,12 @@
 {
-    "next_stage": null,
+    "next_stage": "level5",
     "entities": [
         {
             "script": {
                 "name": "player"
             },
             "position": {
-                "x": 4,
+                "x": 6,
                 "y": -14
             },
             "aabb": {
@@ -21,7 +21,7 @@
         },
         {
             "position": {
-                "x": 4,
+                "x": 6,
                 "y": -14
             },
             "ball": {
@@ -626,7 +626,7 @@
                 {
                     "y": 3,
                     "rot": 0,
-                    "tile": 0,
+                    "tile": 7,
                     "flipX": false,
                     "index": 71,
                     "x": 11
@@ -634,7 +634,7 @@
                 {
                     "y": 3,
                     "rot": 0,
-                    "tile": 0,
+                    "tile": 7,
                     "flipX": false,
                     "index": 72,
                     "x": 12
@@ -746,7 +746,7 @@
                 {
                     "y": 4,
                     "rot": 0,
-                    "tile": 0,
+                    "tile": 7,
                     "flipX": false,
                     "index": 86,
                     "x": 6
@@ -786,7 +786,7 @@
                 {
                     "y": 4,
                     "rot": 0,
-                    "tile": 7,
+                    "tile": 0,
                     "flipX": false,
                     "index": 91,
                     "x": 11
@@ -794,7 +794,7 @@
                 {
                     "y": 4,
                     "rot": 0,
-                    "tile": 7,
+                    "tile": 0,
                     "flipX": false,
                     "index": 92,
                     "x": 12
@@ -818,7 +818,7 @@
                 {
                     "y": 4,
                     "rot": 0,
-                    "tile": 0,
+                    "tile": 7,
                     "flipX": false,
                     "index": 95,
                     "x": 15
@@ -826,7 +826,7 @@
                 {
                     "y": 4,
                     "rot": 0,
-                    "tile": 0,
+                    "tile": 7,
                     "flipX": false,
                     "index": 96,
                     "x": 16
@@ -898,7 +898,7 @@
                 {
                     "y": 5,
                     "rot": 0,
-                    "tile": 7,
+                    "tile": 0,
                     "flipX": false,
                     "index": 105,
                     "x": 5
@@ -906,7 +906,7 @@
                 {
                     "y": 5,
                     "rot": 0,
-                    "tile": 7,
+                    "tile": 0,
                     "flipX": false,
                     "index": 106,
                     "x": 6
@@ -1106,7 +1106,7 @@
                 {
                     "y": 6,
                     "rot": 0,
-                    "tile": 7,
+                    "tile": 0,
                     "flipX": false,
                     "index": 131,
                     "x": 11
@@ -1258,7 +1258,7 @@
                 {
                     "y": 7,
                     "rot": 0,
-                    "tile": 7,
+                    "tile": 0,
                     "flipX": false,
                     "index": 150,
                     "x": 10
@@ -1274,7 +1274,7 @@
                 {
                     "y": 7,
                     "rot": 0,
-                    "tile": 7,
+                    "tile": 0,
                     "flipX": false,
                     "index": 152,
                     "x": 12
@@ -1426,7 +1426,7 @@
                 {
                     "y": 8,
                     "rot": 0,
-                    "tile": 7,
+                    "tile": 0,
                     "flipX": false,
                     "index": 171,
                     "x": 11
@@ -1706,7 +1706,7 @@
                 {
                     "y": 10,
                     "rot": 0,
-                    "tile": 7,
+                    "tile": 0,
                     "flipX": false,
                     "index": 206,
                     "x": 6
@@ -1714,7 +1714,7 @@
                 {
                     "y": 10,
                     "rot": 0,
-                    "tile": 7,
+                    "tile": 0,
                     "flipX": false,
                     "index": 207,
                     "x": 7
@@ -1738,7 +1738,7 @@
                 {
                     "y": 10,
                     "rot": 0,
-                    "tile": 7,
+                    "tile": 0,
                     "flipX": false,
                     "index": 210,
                     "x": 10
@@ -1746,7 +1746,7 @@
                 {
                     "y": 10,
                     "rot": 0,
-                    "tile": 7,
+                    "tile": 0,
                     "flipX": false,
                     "index": 211,
                     "x": 11
@@ -1770,7 +1770,7 @@
                 {
                     "y": 10,
                     "rot": 0,
-                    "tile": 0,
+                    "tile": 7,
                     "flipX": false,
                     "index": 214,
                     "x": 14
@@ -1778,7 +1778,7 @@
                 {
                     "y": 10,
                     "rot": 0,
-                    "tile": 0,
+                    "tile": 7,
                     "flipX": false,
                     "index": 215,
                     "x": 15
@@ -1874,7 +1874,7 @@
                 {
                     "y": 11,
                     "rot": 0,
-                    "tile": 0,
+                    "tile": 7,
                     "flipX": false,
                     "index": 227,
                     "x": 7
@@ -1898,7 +1898,7 @@
                 {
                     "y": 11,
                     "rot": 0,
-                    "tile": 0,
+                    "tile": 7,
                     "flipX": false,
                     "index": 230,
                     "x": 10
@@ -1906,7 +1906,7 @@
                 {
                     "y": 11,
                     "rot": 0,
-                    "tile": 0,
+                    "tile": 7,
                     "flipX": false,
                     "index": 231,
                     "x": 11
@@ -2010,7 +2010,7 @@
                 {
                     "y": 12,
                     "rot": 0,
-                    "tile": 1,
+                    "tile": 2,
                     "flipX": false,
                     "index": 244,
                     "x": 4
@@ -2018,7 +2018,7 @@
                 {
                     "y": 12,
                     "rot": 0,
-                    "tile": 0,
+                    "tile": 3,
                     "flipX": false,
                     "index": 245,
                     "x": 5
@@ -2026,7 +2026,7 @@
                 {
                     "y": 12,
                     "rot": 0,
-                    "tile": 0,
+                    "tile": 5,
                     "flipX": false,
                     "index": 246,
                     "x": 6
@@ -2170,7 +2170,7 @@
                 {
                     "y": 13,
                     "rot": 0,
-                    "tile": 1,
+                    "tile": 0,
                     "flipX": false,
                     "index": 264,
                     "x": 4
@@ -2186,7 +2186,7 @@
                 {
                     "y": 13,
                     "rot": 0,
-                    "tile": 0,
+                    "tile": 1,
                     "flipX": false,
                     "index": 266,
                     "x": 6
@@ -2330,7 +2330,7 @@
                 {
                     "y": 14,
                     "rot": 0,
-                    "tile": 1,
+                    "tile": 0,
                     "flipX": false,
                     "index": 284,
                     "x": 4
@@ -2346,7 +2346,7 @@
                 {
                     "y": 14,
                     "rot": 0,
-                    "tile": 0,
+                    "tile": 1,
                     "flipX": false,
                     "index": 286,
                     "x": 6
