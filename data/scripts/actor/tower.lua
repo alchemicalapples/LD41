@@ -24,13 +24,7 @@ function update(eid, delta)
 
                 if tower.time > tower.delay then
                     tower.time = 0
-                    if tower.speed == 2 then
-                      play_sfx("standardshoot")
-                    end
-                    if tower.speed == 5 then
-                      play_sfx("machinegunshoot")
-
-                    end
+                    play_sfx("standardshoot")
                     local aabb = component.aabb.new()
                     aabb.left = -0.25
                     aabb.right = 0.25
@@ -39,7 +33,6 @@ function update(eid, delta)
                     local animation = component.animation.new()
                     animation.name = "bullet"
                     animation.cycle = tower.bullet_type
-                    animation.rot = anim.rot
                     local timer = component.death_timer.new()
                     timer.time = tower.range / tower.speed
                     local bullet_tag = component.bullet_tag.new()

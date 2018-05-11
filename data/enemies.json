@@ -20,7 +20,7 @@
             },
             "pathing": {},
             "health": {
-                "max_health": 10
+                "max_health": 15
             },
             "enemy_tag": {}
         }
@@ -46,7 +46,7 @@
             },
             "pathing": {},
             "health": {
-                "max_health": 20
+                "max_health": 40
             },
             "enemy_tag": {}
         }
@@ -71,7 +71,7 @@
                 "speedness": 2
             },
             "health": {
-                "max_health": 5
+                "max_health": 10
             },
             "enemy_tag": {}
         }

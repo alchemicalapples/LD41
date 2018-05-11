@@ -47,7 +47,7 @@
             "spawner": {
                 "next_spawn": 15,
                 "spawnrates": [
-                    ["zombie", 10],
+                    ["zombie", 20],
                     ["skeleton", 15],
                     ["ghost", 10]
                 ]
