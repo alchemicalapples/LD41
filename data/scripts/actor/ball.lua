@@ -70,15 +70,23 @@ end
 function ball_states.flying(eid, ball, delta)
     local pos = entities:get_component(eid, component.position)
     local vel = entities:get_component(eid, component.velocity)
-    local dx = math.abs(pos.x - ball.reset_x)
-    local dy = math.abs(pos.y - ball.reset_y)
-    local rdx = math.abs(ball.land_x - ball.reset_x)
-    local rdy = math.abs(ball.land_y - ball.reset_y)
+    local dx = pos.x - ball.reset_x
+    local dy = pos.y - ball.reset_y
+    local rdx = ball.land_x - ball.reset_x
+    local rdy = ball.land_y - ball.reset_y
+
+    local target_dist = math.sqrt(rdx^2 + rdy^2)
+    local ball_dist = math.sqrt(dx^2 + dy^2)
 
     local bposx = pos.x
     local bposy = pos.y
 
-    if rdx <= dx and rdy <= dy then
+    local height = 1 + math.floor(math.max(0, math.min(2, 3 - 3 * math.abs(ball_dist / target_dist * 2 - 1))))
+
+    local anim = entities:get_component(eid, component.animation)
+    anim.cycle = "height_"..height
+
+    if target_dist <= ball_dist then
         local tposx = math.floor(ball.land_x+0.5)
         local tposy = math.floor(-ball.land_y+0.5)
         local location = get_tile_at(tposx,tposy)
@@ -119,7 +127,7 @@ function spawn_dedball(x, y)
     tpos.y = y
     local tanim = component.animation.new()
     tanim.name = "ball"
-    tanim.cycle = "height_3"
+    tanim.cycle = "height_1"
     entities:create_component(dedball, tpos)
     entities:create_component(dedball, tanim)
     play_sfx("ballmiss")

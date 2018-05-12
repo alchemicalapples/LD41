@@ -31,7 +31,7 @@
             },
             "animation": {
                 "name": "ball",
-                "cycle": "height_3",
+                "cycle": "height_1",
                 "frame": 0,
                 "t": 0
             }
