@@ -128,8 +128,11 @@ function spawn_dedball(x, y)
     local tanim = component.animation.new()
     tanim.name = "ball"
     tanim.cycle = "height_1"
+    local timer = component.death_timer.new()
+    timer.time = 10
     entities:create_component(dedball, tpos)
     entities:create_component(dedball, tanim)
+    entities:create_component(dedball, timer)
     play_sfx("ballmiss")
 end
 
