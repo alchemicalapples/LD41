@@ -729,12 +729,17 @@ int main(int argc, char* argv[]) try {
         };
     };
 
+    auto screen_fade = 0.0;
+    auto screen_fade_dir = 1.0;
+
     main_menu_loop = make_menu_state(
         "main_menu", [&]{
             entities.visit([&](ember_database::ent_id eid) {
                     entities.destroy_entity(eid);
                 });
             load_stage("level1");
+            screen_fade = 0.0;
+            screen_fade_dir = 1.0;
             set_game_state("gameplay");
         });
 
@@ -825,7 +830,19 @@ int main(int argc, char* argv[]) try {
         });
 
           if(won)
-              load_next_stage();
+              screen_fade_dir = -1.0;
+
+        screen_fade += delta * screen_fade_dir;
+
+        if (screen_fade > 1.0) {
+            screen_fade = 1.0;
+        }
+
+        if (screen_fade < 0.0) {
+            screen_fade = 0.0;
+            screen_fade_dir = 1.0;
+            load_next_stage();
+        }
 
         systems::death_timer(entities, delta, environment_cache);
 
@@ -889,7 +906,7 @@ int main(int argc, char* argv[]) try {
             sushi::set_uniform("normal_mat", glm::transpose(glm::inverse(modelmat)));
             sushi::set_uniform("cam_forward", glm::vec3{0,0,-1});
             sushi::set_uniform("s_texture", 0);
-            sushi::set_uniform("tint", glm::vec4{1,1,1,1});
+            sushi::set_uniform("tint", glm::vec4{screen_fade,screen_fade,screen_fade,1});
             sushi::set_texture(0, framebuffer.color_texs[0]);
             sushi::draw_mesh(framebuffer_mesh);
 
