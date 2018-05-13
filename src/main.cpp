@@ -829,6 +829,10 @@ int main(int argc, char* argv[]) try {
           won = false;
         });
 
+        if (keys[SDL_SCANCODE_T]) {
+            won = true;
+        }
+
           if(won)
               screen_fade_dir = -1.0;
 

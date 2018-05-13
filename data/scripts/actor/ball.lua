@@ -23,16 +23,22 @@ end
 
 function ball_states.swing(eid, ball, delta)
     if input.left then
-        ball.angle = ball.angle + math.pi/2 * delta * 2
+        ball.angle_vel = math.min(1, ball.angle_vel + delta * 10)
+        ball.angle = ball.angle + math.pi/2 * delta * 2 * ball.angle_vel
         if ball.angle > math.pi/2 then
             ball.angle = math.pi/2
         end
     end
     if input.right then
-        ball.angle = ball.angle - math.pi/2 * delta * 2
+        ball.angle_vel = math.min(1, ball.angle_vel + delta * 10)
+        ball.angle = ball.angle - math.pi/2 * delta * 2 * ball.angle_vel
         if ball.angle < -math.pi/2 then
             ball.angle = -math.pi/2
         end
+    end
+
+    if not input.left and not input.right then
+        ball.angle_vel = 0
     end
 
     local anim = entities:get_component(ball.marker, component.animation)
